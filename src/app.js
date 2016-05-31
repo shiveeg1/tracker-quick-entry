@@ -23,9 +23,6 @@ import 'react-tap-event-plugin';
 import App from './components/app.component';
 import './app.scss';
 
-// import userSettingsActions from './userSettingsActions';
-// import userSettingsStore from './userSettingsStore';
-
 // Render the a LoadingMask to show the user the app is in loading
 // The consecutive render after we did our setup will replace this loading mask
 // with the rendered version of the application.

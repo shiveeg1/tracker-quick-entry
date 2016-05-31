@@ -1,5 +1,5 @@
 @import '../node_modules/d2-ui/lib/css/HeaderBar.css';
-$left-bar-width: 295px;
+$left-bar-width: 300px;
 
 html {
   background-color: #f3f3f3;
@@ -19,6 +19,6 @@ html {
 }
 
 .content-area {
-  margin-left: auto;
+  margin-left: $left-bar-width+15;
   margin-right: auto;
 }

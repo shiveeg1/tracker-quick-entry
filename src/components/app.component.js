@@ -1,16 +1,19 @@
 import React from 'react';
 import log from 'loglevel';
 
+//d2
 import HeaderBar from 'd2-ui/lib/header-bar/HeaderBar.component';
 import OrgUnitTree from 'd2-ui/lib/org-unit-tree';
 
+//App
+import HackyDropdown from './drop-down';
 import AppTheme from '../theme';
 
 class App extends React.Component {
     constructor(props,context){
         super(props);
         this.state = Object.assign({},{
-            programList:[],
+            programList: [],
             selectedOrg: '',
             selectedProg: null,
             allOrgProgData: []
@@ -33,8 +36,41 @@ class App extends React.Component {
         console.log("will mount");
     }
 
-    _sidebarItemClicked(sideBarItemKey) {
-        log.info('Clicked on ', sideBarItemKey);
+    _handleOrgTreeClick(event, orgUnit) {
+        this.setState(state => {
+            if (state.selectedOrg === orgUnit.id) {
+                return { selectedOrg: '' };
+            }
+            return { selectedOrg: orgUnit.id };
+        });
+
+        // fecthing all programs under that org-unit
+        let dropdownProgList = [];
+        this.props.d2.models.organisationUnits.get(orgUnit.id,{paging:false,fields:'id,name,programs[id,name,programStages[id,name,programStageDataElements[id,dataElement[id,name,optionSet[id,name,version]]]],organisationUnits,programTrackedEntityAttributes,trackedEntity]'})
+        .then(orgUnitData => {
+            this.setState({
+                allOrgProgData: orgUnitData.programs
+            });
+            orgUnitData.programs.forEach(oneProgram => {
+                dropdownProgList.push({id:oneProgram.id,displayName:oneProgram.name});
+            })
+            this.setState({
+                programList: dropdownProgList
+            });
+        })
+        .catch(err => {
+            log.error('Failed to load Org programs',err);
+        })
+    };
+
+    _handleDropdownChange(obj) {
+        // TODO Hnadle following bugs :-
+        // Information Campaign / Conraceptive Voucher program and some others give error : Uncaught TypeError: Cannot read property 'id' of undefined
+            this.setState({
+                selectedProg: obj.target.value
+            },function(){
+                let selectedProgData = this.state.allOrgProgData.valuesContainerMap.get(this.state.selectedProg);
+            });
     }
 
     render() {
@@ -91,9 +127,13 @@ class App extends React.Component {
               left: '0px',
               backgroundColor: AppTheme.rawTheme.palette.canvasColor,
            },
+           dropdown: {
+                marginLeft: '10px',
+                marginTop: '20px',
+                width: 350
+            },
         };
 
-        console.log(AppTheme);
         return (
             <div className="app-wrapper" style={styles.parent}>
                 <HeaderBar />
@@ -101,7 +141,7 @@ class App extends React.Component {
                     <div style={styles.treeBox}>
                         <OrgUnitTree
                               root={this.props.root}
-                              onClick={this._handleOrgTreeClick}
+                              onClick={this._handleOrgTreeClick.bind(this)}
                               selected={this.state.selectedOrg}
                           />
                     </div>
@@ -109,8 +149,9 @@ class App extends React.Component {
 
                 <div className="content-area" style={styles.forms}>
                     <div style={styles.header}>
-                         <p>Your component is loaded </p>
+                         <p>Tracker Capture Entry App</p>
                     </div>
+                    <HackyDropdown value='dropValue' onChange={this._handleDropdownChange.bind(this)} menuItems={this.state.programList} includeEmpty={true} emptyLabel='Select Program' />
                 </div>
 
 
