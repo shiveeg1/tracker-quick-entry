@@ -5,9 +5,16 @@ import log from 'loglevel';
 import HeaderBar from 'd2-ui/lib/header-bar/HeaderBar.component';
 import OrgUnitTree from 'd2-ui/lib/org-unit-tree';
 
+//material-ui
+import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
+import baseTheme from 'material-ui/lib/styles/baseThemes/darkBaseTheme';
+
 //App
 import HackyDropdown from './drop-down';
 import AppTheme from '../theme';
+import EditTable from './edit-table';
+
+
 
 class App extends React.Component {
     constructor(props,context){
@@ -25,6 +32,7 @@ class App extends React.Component {
         return {
             d2: this.props.d2,
             root: this.props.root,
+            muiTheme: AppTheme,
         };
     }
 
@@ -119,10 +127,8 @@ class App extends React.Component {
            },
            parent: {
               position:'absolute',
-              minHeight:'100%',
               height: 'auto',
               width: '100%',
-              overflowX: 'hidden',
               display:'flex',
               left: '0px',
               backgroundColor: AppTheme.rawTheme.palette.canvasColor,
@@ -132,7 +138,111 @@ class App extends React.Component {
                 marginTop: '20px',
                 width: 350
             },
+            table: {
+                marginLeft: '10px',
+                marginTop: '20px',
+                border: '1px solid',
+                borderColor: AppTheme.rawTheme.palette.borderColor,
+                overflow:'visible'
+             },
+             tableBody: {
+                 overflowX: 'scroll'
+             },
+             paraStyle: {
+                 color : AppTheme.rawTheme.palette.textColor,
+                 marginRight: '10px'
+             }
         };
+
+        const data = [
+        {
+            name:"Date Of Birth",
+            type:"date",
+            required:true
+        },
+        {
+            name:"Date Of Admission",
+            type:"date",
+            required:true
+        },
+        {
+            name:"First Name",
+            type:"textbox",
+            required:true
+        },
+        {
+            name:"Last Name",
+            type:"textbox",
+            required:false
+        },
+        {
+            name:"Age",
+            type:"numeric",
+            required:false
+        },
+        {
+            name:"Gender",
+            type:"optionSet",
+            options: [
+                {
+                    id: '1',
+                    displayName: 'male'
+                },
+                {
+                    id: '2',
+                    displayName: 'female'
+                },
+                {
+                    id: '3',
+                    displayName: 'other'
+                }
+            ],
+            required:true,
+            onChange: function() {
+                console.log("in on change");
+            }
+        },
+        {
+            name:"AwesomePerson",
+            type:"boolean",
+            required:false
+        },
+        {
+            name:"Register",
+            type:"button",
+            required:true
+        },
+        {
+            name:"Save Status",
+            type:"icon",
+            required:true
+        }
+        ];
+
+        const onChange = (row) => {
+          console.log(row)
+        }
+
+        // <TableEdit
+        //    onChange={onChange}
+        //    rows={rows}
+        //    headerColumns={headers}
+        //  />
+        const tableProps = {
+            height:'auto',
+            fixedHeader:true,
+            fixedFooter:true,
+            selectable:true,
+            multiSelectable:true,
+        }
+        const tableHeaderProps = {
+            displaySelectAll: false,
+            adjustForCheckbox: false
+        }
+
+        const tableBodyProps = {
+            displayRowCheckbox: false
+        }
 
         return (
             <div className="app-wrapper" style={styles.parent}>
@@ -151,16 +261,23 @@ class App extends React.Component {
                     <div style={styles.header}>
                          <p>Tracker Capture Entry App</p>
                     </div>
-                    <HackyDropdown value='dropValue' onChange={this._handleDropdownChange.bind(this)} menuItems={this.state.programList} includeEmpty={true} emptyLabel='Select Program' />
+                    <div style={{display:'flex'}}>
+                        <p style={styles.paraStyle}>Select Program : </p>
+                        <HackyDropdown value='dropValue' onChange={this._handleDropdownChange.bind(this)} menuItems={this.state.programList} includeEmpty={true} emptyLabel='Select Program' />
+                    </div>
+
+                    <hr />
+                    <div style={styles.table}>
+                        <EditTable tableProps={tableProps} tableHeaderProps = {tableHeaderProps} tableBodyProps={tableBodyProps} data={data} rowCount={10} />
+                    </div>
+
                 </div>
-
-
             </div>
         );
     }
 }
 
 App.propTypes = { d2: React.PropTypes.object, root: React.PropTypes.any };
-App.childContextTypes = { d2: React.PropTypes.object, root: React.PropTypes.any };
+App.childContextTypes = { d2: React.PropTypes.object, root: React.PropTypes.any, muiTheme: React.PropTypes.object.isRequired };
 
 export default App;

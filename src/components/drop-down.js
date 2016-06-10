@@ -6,9 +6,12 @@ var injectTapEventPlugin = require('react-tap-event-plugin');
 injectTapEventPlugin();
 
 const styles = {
-    customWidth: {
-        width: 150,
-    },
+    customize: {
+      fontFamily:'Roboto, Arial, sans-serif',
+      fontSize:'14px',
+      width:'auto',
+      minWidth:'200px'
+    }
 };
 
 export default class HackyDropDown extends React.Component {
@@ -37,17 +40,14 @@ export default class HackyDropDown extends React.Component {
         }
     }
 
-    renderEmptyItem() {
-        if (this.props.includeEmpty) {
-            return <MenuItem value="null" primaryText={this.props.emptyLabel}/>;
-        }
-    }
-
     render() {
         const {onChange, menuItems, ...other} = this.props;
         return (
             <div>
-                <SelectField value={this.state.value} onChange={this.handleChange.bind(this)}>
+                <SelectField value={this.state.value}
+                    onChange={this.handleChange.bind(this)}
+                    style={styles.customize}
+                    autoWidth={true}>
                     {this.renderMenuItems(Array.isArray(this.props.menuItems) ? this.props.menuItems : this.props.menuItems.toArray())}
                 </SelectField>
             </div>
