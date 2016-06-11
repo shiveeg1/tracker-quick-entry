@@ -5,10 +5,6 @@ import log from 'loglevel';
 import HeaderBar from 'd2-ui/lib/header-bar/HeaderBar.component';
 import OrgUnitTree from 'd2-ui/lib/org-unit-tree';
 
-//material-ui
-import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-import baseTheme from 'material-ui/lib/styles/baseThemes/darkBaseTheme';
-
 //App
 import HackyDropdown from './drop-down';
 import AppTheme from '../theme';

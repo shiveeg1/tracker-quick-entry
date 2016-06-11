@@ -64,4 +64,4 @@ EditTable.propTypes = {
     rowCount: React.PropTypes.number,
 };
 EditTable.defaultProps = {rowCount:1};
-EditTable.childContextTypes = {};
+EditTable.contextTypes = {};

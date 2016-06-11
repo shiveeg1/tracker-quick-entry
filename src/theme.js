@@ -19,6 +19,8 @@ const theme = {
         canvasColor: Colors.white,
         borderColor: Colors.grey400,
         disabledColor: ColorManipulator.fade(Colors.darkBlack, 0.3),
+        errorColor: Colors.red500,
+        successColor: Colors.green500,
     },
 };
 

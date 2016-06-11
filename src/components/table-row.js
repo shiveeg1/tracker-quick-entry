@@ -12,16 +12,18 @@ import Create from 'material-ui/lib/svg-icons/content/create';
 import Error from 'material-ui/lib/svg-icons/alert/error';
 import IconButton from 'material-ui/lib/icon-button';
 import RaisedButton from 'material-ui/lib/raised-button';
+import FontIcon from 'material-ui/lib/font-icon';
 
 //App
 import HackyDropdown from './drop-down';
 
 export default class RowComponent extends React.Component {
-    constructor(props) {
+    constructor(props,context) {
         super(props);
+        this.context = context;
         this.state = Object.assign({},{
             rowValues: [],
-            status: <Create />
+            status: <FontIcon className="material-icons" color={this.context.muiTheme.rawTheme.palette.primary1Color}>mode_edit</FontIcon>
         });
         this.props = props;
     }
@@ -81,7 +83,7 @@ export default class RowComponent extends React.Component {
         // TODO validate required feilds and save on server
         console.log("validated and saved");
         this.setState({
-            status: <ActionDone iconStyle={{color: '#00bcd4'}}/>
+            status: <FontIcon className="material-icons" color={this.context.muiTheme.rawTheme.palette.successColor}>done</FontIcon>
         })
     }
 
@@ -145,4 +147,4 @@ RowComponent.propTypes = {
     index: React.PropTypes.number,
 };
 RowComponent.defaultProps = { key: 'null'};
-RowComponent.childContextTypes = {};
+RowComponent.contextTypes = {muiTheme: React.PropTypes.object.isRequired};
