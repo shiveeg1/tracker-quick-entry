@@ -223,11 +223,6 @@ class App extends React.Component {
           console.log(row)
         }
 
-        // <TableEdit
-        //    onChange={onChange}
-        //    rows={rows}
-        //    headerColumns={headers}
-        //  />
         const tableProps = {
             height:'auto',
             fixedHeader:true,
