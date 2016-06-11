@@ -16,10 +16,25 @@ const styles = {
 
 export default class HackyDropDown extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {value: "null"};
-  }
+    constructor(props) {
+        super(props);
+        this.state = {value: "null"};
+    }
+
+    shouldComponentUpdate = (nextProps,nextState) => {
+      if(JSON.stringify(nextProps)==JSON.stringify(this.props) && JSON.stringify(nextState)==JSON.stringify(this.state))
+        return false;
+      else
+        return true;
+    }
+
+    componentWillReceiveProps = (nextProps) => {
+      if(nextProps.menuItems.length>0){
+        this.state = {
+          value : nextProps.menuItems[0].id
+        }
+      }
+    }
 
     handleChange = (event, index, value) => {
         this.setState({value});

@@ -41,25 +41,17 @@ class App extends React.Component {
     }
 
     _handleOrgTreeClick(event, orgUnit) {
-        this.setState(state => {
-            if (state.selectedOrg === orgUnit.id) {
-                return { selectedOrg: '' };
-            }
-            return { selectedOrg: orgUnit.id };
-        });
-
         // fecthing all programs under that org-unit
         let dropdownProgList = [];
         this.props.d2.models.organisationUnits.get(orgUnit.id,{paging:false,fields:'id,name,programs[id,name,programStages[id,name,programStageDataElements[id,dataElement[id,name,optionSet[id,name,version]]]],organisationUnits,programTrackedEntityAttributes,trackedEntity]'})
         .then(orgUnitData => {
-            this.setState({
-                allOrgProgData: orgUnitData.programs
-            });
             orgUnitData.programs.forEach(oneProgram => {
                 dropdownProgList.push({id:oneProgram.id,displayName:oneProgram.name});
             })
             this.setState({
-                programList: dropdownProgList
+                allOrgProgData: orgUnitData.programs,
+                programList: dropdownProgList,
+                selectedOrg: this.state.selectedOrg === orgUnit.id ? '' : orgUnit.id
             });
         })
         .catch(err => {
@@ -254,7 +246,7 @@ class App extends React.Component {
                     </div>
                     <div style={{display:'flex'}}>
                         <p style={styles.paraStyle}>Select Program : </p>
-                        <HackyDropdown value='dropValue' onChange={this._handleDropdownChange.bind(this)} menuItems={this.state.programList} includeEmpty={true} emptyLabel='Select Program' />
+                        <HackyDropdown key={0} value='dropValue' onChange={this._handleDropdownChange.bind(this)} menuItems={this.state.programList} includeEmpty={true} emptyLabel='Select Program' />
                     </div>
 
                     <hr />

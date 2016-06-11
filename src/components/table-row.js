@@ -103,7 +103,7 @@ export default class RowComponent extends React.Component {
                         break;
                     case 'optionSet':
                         component =
-                                    <HackyDropdown value='dropValue'
+                                    <HackyDropdown key={id} value='dropValue'
                                         onChange={this._handleChange(id,cell).bind(this)}
                                         menuItems={cell.options}
                                         includeEmpty={true}
