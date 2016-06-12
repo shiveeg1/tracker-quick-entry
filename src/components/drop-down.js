@@ -10,7 +10,6 @@ const styles = {
       fontFamily:'Roboto, Arial, sans-serif',
       fontSize:'14px',
       width:'auto',
-      minWidth:'200px'
     }
 };
 
@@ -18,7 +17,14 @@ export default class HackyDropDown extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {value: "null"};
+        if(this.props.menuItems.length>0){
+          this.state = {
+            value : this.props.menuItems[0].id
+          }
+        }
+        else {
+            this.state = {value: "null"}
+        }
     }
 
     shouldComponentUpdate = (nextProps,nextState) => {

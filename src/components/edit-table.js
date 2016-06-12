@@ -36,7 +36,7 @@ export default class EditTable extends React.Component {
     render() {
         const bodyStyles= {
             overflowX:'visible',
-            width: this.props.data.length*150
+            width: this.props.data.length*145
         }
         return(
             <Table {...this.props.tableProps} bodyStyle={bodyStyles}>

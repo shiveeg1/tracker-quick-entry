@@ -12,6 +12,7 @@ import Create from 'material-ui/lib/svg-icons/content/create';
 import Error from 'material-ui/lib/svg-icons/alert/error';
 import IconButton from 'material-ui/lib/icon-button';
 import RaisedButton from 'material-ui/lib/raised-button';
+import FlatButton from 'material-ui/lib/flat-button';
 import FontIcon from 'material-ui/lib/font-icon';
 
 //App
@@ -118,7 +119,7 @@ export default class RowComponent extends React.Component {
                                     </IconButton>
                         break;
                     case 'button':
-                        component = <RaisedButton label="Save" primary={true} backgroundColor="#00bcd4" onMouseDown={this._validateRow.bind(this)}/>
+                        component = <FlatButton label="Save" primary={true} labelStyle= {{color:"#00bcd4"}} onMouseDown={this._validateRow.bind(this)}/>
                         break;
                     default:
                         component = <TextField />;
