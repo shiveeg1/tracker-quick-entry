@@ -36,9 +36,14 @@ render(<LoadingMask />, document.getElementById('app'));
 function startApp(d2) {
 
     d2.models.organisationUnits.list({ paging: false, level: 1, fields: 'id,displayName,children::isNotEmpty' })
-        .then(rootLevel => rootLevel.toArray()[0])
-        .then(rootUnit => {
-            render(<App d2={d2} root={rootUnit} />, document.getElementById('app'));
+        .then(rootLevel => { 
+            if(rootLevel.size == 0) {
+                log.info("No root");
+                render(<div>No root</div>, document.getElementById('app'));
+            } else {
+                const rootUnit = rootLevel.toArray()[0];
+                render(<App d2={d2} root={rootUnit} />, document.getElementById('app'));
+            }
         })
         .catch(err => console.log('failed to initialise d2'+err));
 }
