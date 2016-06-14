@@ -204,7 +204,8 @@ class App extends React.Component {
             name:"Save Status",
             type:"icon",
             required:true
-        }
+        },
+
         ];
 
         const onChange = (row) => {
@@ -224,7 +225,7 @@ class App extends React.Component {
         }
 
         const tableBodyProps = {
-            displayRowCheckbox: false
+            displayRowCheckbox: false,
         }
 
         return (
@@ -244,15 +245,20 @@ class App extends React.Component {
                     <div style={styles.header}>
                          <p>Tracker Capture Entry App</p>
                     </div>
-                    <div style={{display:'flex'}}>
-                        <p style={styles.paraStyle}>Select Program : </p>
-                        <HackyDropdown key={0} value='dropValue' onChange={this._handleDropdownChange.bind(this)} menuItems={this.state.programList} includeEmpty={true} emptyLabel='Select Program' />
-                    </div>
 
-                    <hr />
-                    <div style={styles.table}>
-                        <EditTable tableProps={tableProps} tableHeaderProps = {tableHeaderProps} tableBodyProps={tableBodyProps} data={data} rowCount={10} />
-                    </div>
+                    {this.state.selectedOrg &&
+                        <div style={{display:'flex'}}>
+                            <p style={styles.paraStyle}>Select Program : </p>
+                            <HackyDropdown key={0} value='dropValue' onChange={this._handleDropdownChange.bind(this)} menuItems={this.state.programList} includeEmpty={true} emptyLabel='Select Program' />
+                        </div>
+
+                     }
+
+                    { this.state.selectedProg &&
+                        <div style={styles.table}>
+                            <EditTable tableProps={tableProps} tableHeaderProps = {tableHeaderProps} tableBodyProps={tableBodyProps} data={data} rowCount={10} />
+                        </div>
+                    }
 
                 </div>
             </div>
