@@ -142,75 +142,114 @@ class App extends React.Component {
              }
         };
 
-        const data = [
-        {
-            name:"Date Of Birth",
-            type:"date",
-            required:true
-        },
-        {
-            name:"Date Of Admission",
-            type:"date",
-            required:true
-        },
-        {
-            name:"First Name",
-            type:"textbox",
-            required:true
-        },
-        {
-            name:"Last Name",
-            type:"textbox",
-            required:false
-        },
-        {
-            name:"Age",
-            type:"numeric",
-            required:false
-        },
-        {
-            name:"Gender",
-            type:"optionSet",
-            options: [
+        const data ={
+            headers: [
                 {
-                    id: '1',
-                    displayName: 'male'
+                    name:"Date Of Birth",
+                    type:"date",
+                    required:true
                 },
                 {
-                    id: '2',
-                    displayName: 'female'
+                    name:"Date Of Admission",
+                    type:"date",
+                    required:true
                 },
                 {
-                    id: '3',
-                    displayName: 'other'
-                }
+                    name:"First Name",
+                    type:"textbox",
+                    required:true
+                },
+                {
+                    name:"Last Name",
+                    type:"textbox",
+                    required:false
+                },
+                {
+                    name:"Age",
+                    type:"numeric",
+                    required:false
+                },
+                {
+                    name:"Gender",
+                    type:"optionSet",
+                    options: [
+                        {
+                            id: '1',
+                            displayName: 'male'
+                        },
+                        {
+                            id: '2',
+                            displayName: 'female'
+                        },
+                        {
+                            id: '3',
+                            displayName: 'other'
+                        }
+                    ],
+                    required:true,
+                    onChange: function() {
+                        console.log("in on change");
+                    }
+                },
+                {
+                    name:"AwesomePerson",
+                    type:"boolean",
+                    required:false
+                },
+                {
+                    name:"Register",
+                    type:"button",
+                    required:true
+                },
+                {
+                    name:"Save Status",
+                    type:"icon",
+                    required:true
+                },
             ],
-            required:true,
-            onChange: function() {
-                console.log("in on change");
-            }
-        },
-        {
-            name:"AwesomePerson",
-            type:"boolean",
-            required:false
-        },
-        {
-            name:"Register",
-            type:"button",
-            required:true
-        },
-        {
-            name:"Save Status",
-            type:"icon",
-            required:true
-        },
-
-        ];
-
-        const onChange = (row) => {
-          console.log(row)
-        }
+            programStages: [
+                {
+                    name: 'stage 1',
+                    events: [
+                        {
+                            name: 'first name',
+                            type: 'textbox',
+                            required:true
+                        },
+                        {
+                            name:"AwesomePerson",
+                            type:"boolean",
+                            required:false
+                        },
+                        {
+                            name:"Date Of Admission",
+                            type:"date",
+                            required:true
+                        }
+                    ]
+                },
+                {
+                    name: 'stage 2',
+                    events: [
+                        {
+                            name: 'nick name',
+                            type: 'textbox',
+                            required:true
+                        },
+                        {
+                            name:"AwesomePerson",
+                            type:"boolean",
+                            required:false
+                        },
+                        {
+                            name:"Date Of Birth",
+                            type:"date",
+                            required:true
+                        }
+                    ]
+                }
+            ]
+        };
 
         const tableProps = {
             height:'auto',
@@ -251,7 +290,6 @@ class App extends React.Component {
                             <p style={styles.paraStyle}>Select Program : </p>
                             <HackyDropdown key={0} value='dropValue' onChange={this._handleDropdownChange.bind(this)} menuItems={this.state.programList} includeEmpty={true} emptyLabel='Select Program' />
                         </div>
-
                      }
 
                     { this.state.selectedProg &&

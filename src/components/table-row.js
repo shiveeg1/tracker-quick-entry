@@ -119,7 +119,10 @@ export default class RowComponent extends React.Component {
                                     </IconButton>
                         break;
                     case 'button':
-                        component = <FlatButton label="Save" primary={true} labelStyle= {{color:"#00bcd4"}} onMouseDown={this._validateRow.bind(this)}/>
+                        component = <FlatButton label="Save" primary={true}
+                            labelStyle= {{color:this.context.muiTheme.rawTheme.palette.primary1Color}}
+                            onMouseDown={this._validateRow.bind(this)}
+                            onClick={this.props.expandToggle}/>
                         break;
                     default:
                         component = <TextField />;
@@ -136,7 +139,7 @@ export default class RowComponent extends React.Component {
 
     render() {
         return(
-            <TableRow key={this.props.key}>
+            <TableRow key={this.props.key} style={{backgroundColor:'aliceBlue'}}>
               {this.renderRow()}
             </TableRow>
         )

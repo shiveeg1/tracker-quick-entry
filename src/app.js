@@ -34,7 +34,7 @@ render(<LoadingMask />, document.getElementById('app'));
  * @param d2 Instance of the d2 library that is returned by the `init` function.
  */
 function startApp(d2) {
-
+    // TODO handle no root condition. Cases where data is not available
     d2.models.organisationUnits.list({ paging: false, level: 1, fields: 'id,displayName,children::isNotEmpty' })
         .then(rootLevel => rootLevel.toArray()[0])
         .then(rootUnit => {
