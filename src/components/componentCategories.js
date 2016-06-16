@@ -51,7 +51,6 @@ export default function getComponent(cell,id,hc,bc) {
         case 'textbox':
             component = Object.assign({}, fieldBase, {
                         component: TextField,
-                        value: "shivee",
                         changeEvent: 'onBlur',
                         props: Object.assign({}, fieldBase.props, {
                             onBlur: hc

@@ -11,6 +11,9 @@ import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
 //App
 import ComponentCategories from './componentCategories';
 
+/*
+TODO fix multiple handleChange calls
+*/
 export default class RowComponent extends React.Component {
     constructor(props,context) {
         super(props);
@@ -24,7 +27,6 @@ export default class RowComponent extends React.Component {
 
     _handleChange = (id,cell) => {
         let row = this.state.rowValues;
-        console.log(this.state.rowValues, cell.type);
         let type = cell.type;
         switch (type) {
             case 'date': return (
@@ -74,14 +76,6 @@ export default class RowComponent extends React.Component {
         }
     }
 
-    _validateRow() {
-        // TODO validate required feilds and save on server
-        console.log("validated and saved");
-        this.setState({
-            status: <FontIcon className="material-icons" color={this.context.muiTheme.rawTheme.palette.successColor}>done</FontIcon>
-        })
-    }
-
     _handleButtonClick() {
         this.props.expandToggle();
         this.setState({
@@ -89,7 +83,12 @@ export default class RowComponent extends React.Component {
         })
     }
 
-    renderRow2() {
+    _handleUpdateFeild() {
+        // TODO validate required feilds and save on server
+        console.log("feild updated");
+    }
+
+    renderRow() {
         let hc = null;
         const buttonColor = this.context.muiTheme.rawTheme.palette.primary1Color;
         return (
@@ -107,7 +106,7 @@ export default class RowComponent extends React.Component {
                 let fields = [component];
                 return (
                     <TableRowColumn key={id}>
-                        <FormBuilder key={id} fields={fields} onUpdateField={this.doSomething} />
+                        <FormBuilder key={id} fields={fields} onUpdateField={this._handleUpdateFeild} />
                     </TableRowColumn>
                 )
             }
@@ -117,7 +116,7 @@ export default class RowComponent extends React.Component {
     render() {
         return(
             <TableRow key={this.props.key} style={{backgroundColor:'aliceBlue'}}>
-              {this.renderRow2()}
+              {this.renderRow()}
             </TableRow>
         )
     }

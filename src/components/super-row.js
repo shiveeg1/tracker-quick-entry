@@ -3,15 +3,13 @@ import times from 'lodash.times';
 // material-ui
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/lib/table';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/lib/card';
-import SelectField from 'material-ui/lib/select-field';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import FlatButton from 'material-ui/lib/flat-button';
 //App
 import RowComponent from './table-row';
 import ProgramStageDropDown from './drop-down';
 
 /*
-TODO change collapsible height dynamically
+TODO change collapsible-div height dynamically
+TODO collapse option
 */
 export default class CompositeRow extends React.Component {
   constructor(props,context){
