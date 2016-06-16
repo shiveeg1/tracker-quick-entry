@@ -63,7 +63,7 @@ export default class CompositeRow extends React.Component {
                     title="Program Stage :"
                     style={{height:'30px'}}
                   />
-                  <ProgramStageDropDown key={this.props.index} value='dropValue'
+              <ProgramStageDropDown key={this.props.key} value='dropValue'
                       onChange={this._handleStageSelect.bind(this)}
                       menuItems={programNames}
                       includeEmpty={true}
@@ -83,4 +83,19 @@ export default class CompositeRow extends React.Component {
 
     )
   }
+}
+
+CompositeRow.propTypes = {
+    tableProps: React.PropTypes.object,
+    tableHeaderProps: React.PropTypes.object,
+    tableBodyProps: React.PropTypes.object,
+    key: React.PropTypes.any.isRequired,
+    data: React.PropTypes.shape({
+        headers: React.PropTypes.arrayOf(React.PropTypes.shape({
+            name: React.PropTypes.string.isRequired,
+            type: React.PropTypes.string.isRequired,
+            required: React.PropTypes.bool
+        })).isRequired,
+        programStages: React.PropTypes.array
+    }).isRequired
 }

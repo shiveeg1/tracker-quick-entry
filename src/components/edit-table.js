@@ -8,7 +8,6 @@ import CheckBox from 'd2-ui/lib/form-fields/check-box';
 //loadash
 import times from 'lodash.times';
 //App
-import RowComponent from './table-row';
 import CompositeRow from './super-row';
 
 /*  TODO handle "required- true/false" fields
