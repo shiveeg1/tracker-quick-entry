@@ -10,8 +10,6 @@ import HackyDropdown from './drop-down';
 import AppTheme from '../theme';
 import EditTable from './edit-table';
 
-
-
 class App extends React.Component {
     constructor(props,context){
         super(props);

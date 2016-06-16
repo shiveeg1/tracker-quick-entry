@@ -2,21 +2,14 @@ import React from 'react';
 
 // material-ui
 import {TableRow, TableRowColumn} from 'material-ui/lib/table';
-import TextField from 'material-ui/lib/TextField';
-import DatePicker from 'material-ui/lib/date-picker/date-picker';
-import SelectField from 'material-ui/lib/select-field';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import Toggle from 'material-ui/lib/toggle';
-import ActionDone from 'material-ui/lib/svg-icons/action/done';
-import Create from 'material-ui/lib/svg-icons/content/create';
-import Error from 'material-ui/lib/svg-icons/alert/error';
-import IconButton from 'material-ui/lib/icon-button';
-import RaisedButton from 'material-ui/lib/raised-button';
-import FlatButton from 'material-ui/lib/flat-button';
 import FontIcon from 'material-ui/lib/font-icon';
 
+//d2-ui
+import { wordToValidatorMap } from 'd2-ui/lib/forms/Validators';
+import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
+
 //App
-import HackyDropdown from './drop-down';
+import ComponentCategories from './componentCategories';
 
 export default class RowComponent extends React.Component {
     constructor(props,context) {
@@ -31,6 +24,7 @@ export default class RowComponent extends React.Component {
 
     _handleChange = (id,cell) => {
         let row = this.state.rowValues;
+        console.log(this.state.rowValues, cell.type);
         let type = cell.type;
         switch (type) {
             case 'date': return (
@@ -88,49 +82,32 @@ export default class RowComponent extends React.Component {
         })
     }
 
-    renderRow() {
+    _handleButtonClick() {
+        this.props.expandToggle();
+        this.setState({
+            status: <FontIcon className="material-icons" color={this.context.muiTheme.rawTheme.palette.successColor}>done</FontIcon>
+        })
+    }
+
+    renderRow2() {
+        let hc = null;
+        const buttonColor = this.context.muiTheme.rawTheme.palette.primary1Color;
         return (
             this.props.data.map((cell,id) => {
-                let component= {};
-                switch (cell.type) {
-                    case 'date':
-                        component = <DatePicker autoOk={true} onChange={this._handleChange(id,cell).bind(this)}/>;
-                        break;
-                    case 'numeric':
-                        component = <TextField onBlur={this._handleChange(id,cell).bind(this)}/>;
-                        break;
-                    case 'textbox':
-                        component = <TextField onBlur={this._handleChange(id,cell).bind(this)}/>;
-                        break;
-                    case 'optionSet':
-                        component =
-                                    <HackyDropdown key={id} value='dropValue'
-                                        onChange={this._handleChange(id,cell).bind(this)}
-                                        menuItems={cell.options}
-                                        includeEmpty={true}
-                                        emptyLabel='Select Program' />
-                        break;
-                    case 'boolean':
-                        component = <Toggle />
-                        break;
-                    case 'icon':
-                        component = <IconButton>
-                                        {this.state.status}
-                                    </IconButton>
-                        break;
-                    case 'button':
-                        component = <FlatButton label="Save" primary={true}
-                            labelStyle= {{color:this.context.muiTheme.rawTheme.palette.primary1Color}}
-                            onMouseDown={this._validateRow.bind(this)}
-                            onClick={this.props.expandToggle}/>
-                        break;
-                    default:
-                        component = <TextField />;
-
+                hc = this._handleChange(id,cell).bind(this);
+                let component = ComponentCategories(cell,id,hc);
+                component.value = this.state.rowValues[id];
+                if(component.name === 'button') {
+                    component.props.labelStyle = {color:this.context.muiTheme.rawTheme.palette.primary1Color};
+                    component.props.onClick=this._handleButtonClick.bind(this);
                 }
+                else if (component.name ==='icon') {
+                    component.props.children = this.state.status;
+                }
+                let fields = [component];
                 return (
                     <TableRowColumn key={id}>
-                        {component}
+                        <FormBuilder key={id} fields={fields} onUpdateField={this.doSomething} />
                     </TableRowColumn>
                 )
             }
@@ -140,14 +117,18 @@ export default class RowComponent extends React.Component {
     render() {
         return(
             <TableRow key={this.props.key} style={{backgroundColor:'aliceBlue'}}>
-              {this.renderRow()}
+              {this.renderRow2()}
             </TableRow>
         )
     }
 };
 
 RowComponent.propTypes = {
-    data: React.PropTypes.array.isRequired,
+    data: React.PropTypes.arrayOf(React.PropTypes.shape({
+        name: React.PropTypes.string.isRequired,
+        type: React.PropTypes.string.isRequired,
+        required: React.PropTypes.bool
+    })).isRequired,
     index: React.PropTypes.number,
 };
 RowComponent.defaultProps = { key: 'null'};

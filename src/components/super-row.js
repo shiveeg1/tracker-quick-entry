@@ -22,8 +22,8 @@ export default class CompositeRow extends React.Component {
     }
   }
 
-  _handleStageSelect() {
-    console.log("selected program stage");
+  _handleStageSelect(obj) {
+    console.log(this.props.data.programStages[obj.target.value]);
   }
 
   render() {
@@ -44,8 +44,8 @@ export default class CompositeRow extends React.Component {
         width: this.props.data.length*150
     }
 
-    const programNames = this.props.data.programStages.map(stage => (
-        stage.name
+    const programNames = this.props.data.programStages.map((stage,index) => (
+        {displayName: stage.name, id: index}
     ))
     return (
 //Single outer-row start
@@ -62,18 +62,16 @@ export default class CompositeRow extends React.Component {
           <Card style={styles.cardStyle}>
               <div style={{display:'flex'}}>
                   <CardHeader
-                    title="Program Stage name"
+                    title="Program Stage :"
                     style={{height:'30px'}}
                   />
+                  <ProgramStageDropDown key={this.props.index} value='dropValue'
+                      onChange={this._handleStageSelect.bind(this)}
+                      menuItems={programNames}
+                      includeEmpty={true}
+                      emptyLabel='Select Program' />
                   <CardText>
-                      {console.log(programNames)}
-                          <SelectField value={this.state.value} onChange={this.handleChange}>
-                            <MenuItem value={1} primaryText="Stage 1" />
-                            <MenuItem value={2} primaryText="Stage 2" />
-                            <MenuItem value={3} primaryText="Stage 3" />
-                            <MenuItem value={4} primaryText="Stage 4" />
-                            <MenuItem value={5} primaryText="Stage 5" />
-                          </SelectField>
+
                   </CardText>
               </div>
           </Card>

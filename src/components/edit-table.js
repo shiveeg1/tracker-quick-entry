@@ -60,7 +60,14 @@ EditTable.propTypes = {
     tableProps: React.PropTypes.object,
     tableHeaderProps: React.PropTypes.object,
     tableBodyProps: React.PropTypes.object,
-    data: React.PropTypes.object.isRequired,
+    data: React.PropTypes.shape({
+        headers: React.PropTypes.arrayOf(React.PropTypes.shape({
+            name: React.PropTypes.string.isRequired,
+            type: React.PropTypes.string.isRequired,
+            required: React.PropTypes.bool
+        })).isRequired,
+        programStages: React.PropTypes.array
+    }).isRequired,
     rowCount: React.PropTypes.number,
 };
 EditTable.defaultProps = {rowCount:1};
