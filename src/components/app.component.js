@@ -230,6 +230,21 @@ class App extends React.Component {
                             name:"Date Of Admission",
                             type:"date",
                             required:true
+                        },
+                        {
+                            name: 'first name',
+                            type: 'textbox',
+                            required:true
+                        },
+                        {
+                            name:"AwesomePerson",
+                            type:"boolean",
+                            required:false
+                        },
+                        {
+                            name:"Date Of Admission",
+                            type:"date",
+                            required:true
                         }
                     ]
                 },
@@ -260,8 +275,7 @@ class App extends React.Component {
             height:'auto',
             fixedHeader:true,
             fixedFooter:true,
-            selectable:true,
-            multiSelectable:true,
+            selectable:false,
         }
         const tableHeaderProps = {
             displaySelectAll: false,

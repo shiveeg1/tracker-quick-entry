@@ -33,7 +33,8 @@ export default function getComponent(cell,id,hc) {
                         component: DatePicker,
                         props: Object.assign({}, fieldBase.props, {
                             onChange: hc,
-                            autoOk : true
+                            autoOk : true,
+                            textFieldStyle:{width:'100%'}
                         }),
                     });
             break;

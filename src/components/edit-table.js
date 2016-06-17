@@ -50,7 +50,6 @@ export default class EditTable extends React.Component {
                 </TableHeader>
                 <TableBody {...this.props.tableBodyProps} >
                   {times(this.props.rowCount,function () {
-                      console.log(index);
                       return (
                         <CompositeRow key={index++} {...this.props}/>
                       )
