@@ -26,8 +26,10 @@ export default class EditTable extends React.Component {
         }
 
         return ( this.props.data.headers.map((cell,id) => {
+            let headerPosStyle = cell.label == 'Save' ? {paddingTop:20,display:'block'} : {};
+            let cellStyle= !!cell.cellStyle ? cell.cellStyle :headerStyle;
             return (
-                <TableHeaderColumn style={headerStyle} key={id}>{cell.name}</TableHeaderColumn>
+                <TableHeaderColumn style={cellStyle} key={id}><span style={headerPosStyle}>{cell.name}</span></TableHeaderColumn>
             )
 
         }))
@@ -38,6 +40,7 @@ export default class EditTable extends React.Component {
             overflowX:'visible',
         width: this.props.data.headers.length*150
         }
+        let index=1;
         return(
             <Table {...this.props.tableProps} bodyStyle={bodyStyles}>
                 <TableHeader {...this.props.tableHeaderProps} >
@@ -46,9 +49,13 @@ export default class EditTable extends React.Component {
                   </TableRow>
                 </TableHeader>
                 <TableBody {...this.props.tableBodyProps} >
-                  {times(this.props.rowCount,(index) => (
-                      <CompositeRow key={index} {...this.props}/>
-                  ))}
+                  {times(this.props.rowCount,function () {
+                      console.log(index);
+                      return (
+                        <CompositeRow key={index++} {...this.props}/>
+                      )
+
+                  }.bind(this))}
                 </TableBody>
             </Table>
         )

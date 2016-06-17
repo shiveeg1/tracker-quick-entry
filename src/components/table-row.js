@@ -20,7 +20,8 @@ export default class RowComponent extends React.Component {
         this.context = context;
         this.state = Object.assign({},{
             rowValues: [],
-            status: <FontIcon className="material-icons" color={this.context.muiTheme.rawTheme.palette.primary1Color}>mode_edit</FontIcon>
+            status: <FontIcon className="material-icons" color={this.context.muiTheme.rawTheme.palette.primary1Color}>mode_edit</FontIcon>,
+            statusColor: this.context.muiTheme.rawTheme.palette.primary1Color
         });
         this.props = props;
     }
@@ -79,7 +80,8 @@ export default class RowComponent extends React.Component {
     _handleButtonClick() {
         this.props.expandToggle();
         this.setState({
-            status: <FontIcon className="material-icons" color={this.context.muiTheme.rawTheme.palette.successColor}>done</FontIcon>
+            status: <FontIcon className="material-icons">done</FontIcon>,
+            statusColor: this.context.muiTheme.rawTheme.palette.successColor
         })
     }
 
@@ -95,17 +97,23 @@ export default class RowComponent extends React.Component {
             this.props.data.map((cell,id) => {
                 hc = this._handleChange(id,cell).bind(this);
                 let component = ComponentCategories(cell,id,hc);
+                let cellStyle= {};
                 component.value = this.state.rowValues[id];
                 if(component.name === 'button') {
+                    cell.label = cell.label === 'null' ? this.props.label : cell.label
                     component.props.labelStyle = {color:this.context.muiTheme.rawTheme.palette.primary1Color};
                     component.props.onClick=this._handleButtonClick.bind(this);
+                    component.props.label=cell.label;
+                    component.props.style = {color:this.state.statusColor,marginTop:5}
+                    component.props.icon = this.state.status;
+                    cellStyle= cell.cellStyle;
                 }
                 else if (component.name ==='icon') {
                     component.props.children = this.state.status;
                 }
                 let fields = [component];
                 return (
-                    <TableRowColumn key={id}>
+                    <TableRowColumn key={id} style={cellStyle}>
                         <FormBuilder key={id} fields={fields} onUpdateField={this._handleUpdateFeild} />
                     </TableRowColumn>
                 )
@@ -126,9 +134,11 @@ RowComponent.propTypes = {
     data: React.PropTypes.arrayOf(React.PropTypes.shape({
         name: React.PropTypes.string.isRequired,
         type: React.PropTypes.string.isRequired,
-        required: React.PropTypes.bool
+        required: React.PropTypes.bool,
+        cellStyle: React.PropTypes.object,
+        label: React.PropTypes.string
     })).isRequired,
     index: React.PropTypes.number,
 };
-RowComponent.defaultProps = { key: 'null'};
+RowComponent.defaultProps = {label:"Save"};
 RowComponent.contextTypes = {muiTheme: React.PropTypes.object.isRequired};

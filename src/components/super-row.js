@@ -18,6 +18,7 @@ export default class CompositeRow extends React.Component {
     this.state = {
       animHeight:'0px'
     }
+    this.props = props;
   }
 
   _handleStageSelect(obj) {
@@ -45,9 +46,10 @@ export default class CompositeRow extends React.Component {
     const programNames = this.props.data.programStages.map((stage,index) => (
         {displayName: stage.name, id: index}
     ))
+
     return (
 //Single outer-row start
-      <TableRow key={this.props.key}>
+      <TableRow >
       <TableRowColumn colSpan={this.props.data.headers.length} style={styles.noPad}>
       <Table {...this.props.tableProps}>
           <TableBody {...this.props.tableBodyProps} >
@@ -63,7 +65,7 @@ export default class CompositeRow extends React.Component {
                     title="Program Stage :"
                     style={{height:'30px'}}
                   />
-              <ProgramStageDropDown key={this.props.key} value='dropValue'
+              <ProgramStageDropDown value='dropValue'
                       onChange={this._handleStageSelect.bind(this)}
                       menuItems={programNames}
                       includeEmpty={true}
@@ -89,7 +91,6 @@ CompositeRow.propTypes = {
     tableProps: React.PropTypes.object,
     tableHeaderProps: React.PropTypes.object,
     tableBodyProps: React.PropTypes.object,
-    key: React.PropTypes.any.isRequired,
     data: React.PropTypes.shape({
         headers: React.PropTypes.arrayOf(React.PropTypes.shape({
             name: React.PropTypes.string.isRequired,

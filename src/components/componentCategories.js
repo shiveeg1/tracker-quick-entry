@@ -17,9 +17,7 @@ import FontIcon from 'material-ui/lib/font-icon';
 //App
 import HackyDropdown from './drop-down';
 
-
-
-export default function getComponent(cell,id,hc,bc) {
+export default function getComponent(cell,id,hc) {
     let component= {};
 
     const fieldBase = {
@@ -86,7 +84,6 @@ export default function getComponent(cell,id,hc,bc) {
                         name: 'button',
                         component: FlatButton,
                         props : {
-                            label: "Save",
                             primary: true,
                         }
                     });

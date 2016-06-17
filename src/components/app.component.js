@@ -129,7 +129,8 @@ class App extends React.Component {
                 marginTop: '20px',
                 border: '1px solid',
                 borderColor: AppTheme.rawTheme.palette.borderColor,
-                overflow:'visible'
+                overflow:'visible',
+                position:'relative'
              },
              tableBody: {
                  overflowX: 'scroll'
@@ -197,13 +198,19 @@ class App extends React.Component {
                 {
                     name:"Register",
                     type:"button",
-                    required:true
-                },
-                {
-                    name:"Save Status",
-                    type:"icon",
-                    required:true
-                },
+                    label:"Save",
+                    required:true,
+                    cellStyle:{
+                        position:'absolute',
+                        right:'0',
+                        width:100,
+                        backgroundColor:'white',
+                        borderLeft:'solid 1px #bdbdbd',
+                        borderBottom:'solid 1px #bdbdbd',
+                        zIndex:10,
+                        textAlign:'center'
+                    }
+                }
             ],
             programStages: [
                 {
