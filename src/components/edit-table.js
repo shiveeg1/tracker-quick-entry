@@ -21,7 +21,7 @@ export default class EditTable extends React.Component {
 
     renderHeader() {
         const headerStyle = {
-            width:103,
+            width:'auto',
             textAlign: 'left'
         }
 
@@ -42,7 +42,7 @@ export default class EditTable extends React.Component {
         }
         let index=1;
         return(
-            <Table {...this.props.tableProps} bodyStyle={bodyStyles}>
+            <Table {...this.props.tableProps} bodyStyle={bodyStyles} style={{width:this.props.data.headers.length*150}}>
                 <TableHeader {...this.props.tableHeaderProps} >
                   <TableRow>
                      {this.renderHeader()}

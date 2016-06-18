@@ -206,8 +206,8 @@ class App extends React.Component {
                         width:100,
                         backgroundColor:'white',
                         borderLeft:'solid 1px #bdbdbd',
-                        borderBottom:'solid 1px #bdbdbd',
-                        zIndex:10,
+                        zIndex:1,
+                        paddingTop:0,
                         textAlign:'center'
                     }
                 }
