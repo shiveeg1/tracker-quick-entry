@@ -34,14 +34,6 @@ export default class HackyDropDown extends React.Component {
         return true;
     }
 
-    componentWillReceiveProps = (nextProps) => {
-      if(nextProps.menuItems.length>0){
-        this.state = {
-          value : nextProps.menuItems[0].id
-        }
-      }
-    }
-
     handleChange = (event, index, value) => {
         this.setState({value});
         this.props.onChange({target: {value: value}});

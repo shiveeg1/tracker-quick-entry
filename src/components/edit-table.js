@@ -21,8 +21,8 @@ export default class EditTable extends React.Component {
 
     renderHeader() {
         const headerStyle = {
-            width:100,
-            textAlign: 'center'
+            width:103,
+            textAlign: 'left'
         }
 
         return ( this.props.data.headers.map((cell,id) => {

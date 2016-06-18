@@ -276,6 +276,7 @@ class App extends React.Component {
             fixedHeader:true,
             fixedFooter:true,
             selectable:false,
+            multiSelectable:true,
         }
         const tableHeaderProps = {
             displaySelectAll: false,

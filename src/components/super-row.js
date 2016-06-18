@@ -12,6 +12,7 @@ import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
 /*
 TODO change collapsible-div height dynamically
 TODO collapse option
+TODO change stageData state structure accordingly. Maybe array of objects
 */
 export default class CompositeRow extends React.Component {
   constructor(props,context){
@@ -91,12 +92,13 @@ export default class CompositeRow extends React.Component {
     const styles = {
       noPad : {
         padding:'0px',
-        height:this.state.animHeight,
-        transition:'height 1s ease'
+        height: 0,
+        maxHeight:this.state.animHeight,
+        transition:'max-height 1s ease'
       },
       cardStyle : {
-        height:this.state.animHeight,
-        transition:'height 1s ease',
+        maxHeight:this.state.animHeight,
+        transition:'max-height 1s ease',
         margin: '5px',
         overflowX: 'auto',
       }
@@ -128,7 +130,7 @@ export default class CompositeRow extends React.Component {
       <Table {...this.props.tableProps}>
           <TableBody {...this.props.tableBodyProps} >
           {/*Row1 for data Entry*/}
-          <RowComponent data={this.props.data.headers} expandToggle={function(){this.setState({animHeight:'auto'})}.bind(this)}/>
+          <RowComponent data={this.props.data.headers} expandToggle={function(){this.setState({animHeight:'500'})}.bind(this)}/>
 
           {/*Row2 for expandable Tab*/}
           <TableRow style={styles.noPad}>
