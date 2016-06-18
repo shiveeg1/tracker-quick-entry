@@ -88,6 +88,18 @@ export default class CompositeRow extends React.Component {
       console.log("updated");
   }
 
+  toggleHeight() {
+      if(this.state.animHeight === '0px') {
+          this.setState({
+              animHeight: '500px'
+          })
+      }
+      else {
+          this.setState({
+              animHeight: '0px'
+          })
+      }
+  }
   render() {
     const styles = {
       noPad : {
@@ -99,7 +111,6 @@ export default class CompositeRow extends React.Component {
       cardStyle : {
         maxHeight:this.state.animHeight,
         transition:'max-height 1s ease',
-        margin: '5px',
         overflowX: 'auto',
       }
     }
@@ -130,7 +141,7 @@ export default class CompositeRow extends React.Component {
       <Table {...this.props.tableProps}>
           <TableBody {...this.props.tableBodyProps} >
           {/*Row1 for data Entry*/}
-          <RowComponent data={this.props.data.headers} expandToggle={function(){this.setState({animHeight:'500'})}.bind(this)}/>
+          <RowComponent data={this.props.data.headers} expandToggle={this.toggleHeight.bind(this)}/>
 
           {/*Row2 for expandable Tab*/}
           <TableRow style={styles.noPad}>

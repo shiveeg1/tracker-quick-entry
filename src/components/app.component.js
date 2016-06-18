@@ -217,7 +217,7 @@ class App extends React.Component {
                     name: 'stage 1',
                     events: [
                         {
-                            name: 'first name',
+                            name: 'First name',
                             type: 'textbox',
                             required:true
                         },
@@ -232,7 +232,7 @@ class App extends React.Component {
                             required:true
                         },
                         {
-                            name: 'first name',
+                            name: 'Last name',
                             type: 'textbox',
                             required:true
                         },
@@ -242,7 +242,7 @@ class App extends React.Component {
                             required:false
                         },
                         {
-                            name:"Date Of Admission",
+                            name:"Date Of Birth",
                             type:"date",
                             required:true
                         }
