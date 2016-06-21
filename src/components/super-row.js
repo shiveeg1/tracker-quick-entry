@@ -32,54 +32,41 @@ export default class CompositeRow extends React.Component {
     });
   }
 
-  _handleEventChange =(id,cell) => {
+  _handleChange = (id,cell,info) => {
       let row = this.state.stageData;
       let type = cell.type;
       switch (type) {
-          case 'date': return (
-              function(event,date) {
-                  row[id] = date;
+          case 'date':
+                  row[id] = info[1];
                   this.setState({
                       stageData:row
                   });
-              }
-          )
               break;
-          case 'textbox': return (
-              function(event) {
-                  row[id] = event.target.value;
+          case 'textbox':
+                  row[id] = info[0].target.value;
                   this.setState({
                       stageData: row
                   });
-              }
-          )
+
           break;
-          case 'numeric': return (
-              function(event) {
-                  row[id] = event.target.value;
+          case 'numeric':
+                  row[id] = info[0].target.value;
                   this.setState({
                       stageData: row
                   });
-              }
-          )
+
           break;
-          case 'optionSet': return (
-              function(obj) {
-                  row[id] = cell.options[obj.target.value-1].displayName;
+          case 'optionSet':
+                  row[id] = cell.options[info[0].target.value-1].displayName;
                   this.setState({
                       stageData: row
                   });
-              }
-          )
           break;
-          default: return (
-              function(event) {
-                  row[id] = event.target.value;
+          default:
+                  row[id] = info[0].target.value;
                   this.setState({
                       stageData: row
                   });
-              }
-          )
       }
   }
 
@@ -133,7 +120,7 @@ export default class CompositeRow extends React.Component {
     const programNames = this.props.data.programStages.map((stage,index) => (
         {displayName: stage.name, id: index}
     ))
-    let component = {}, fields = [];
+    let component = {}, fields = [], hc=null;
     return (
 //Single outer-row start
       <TableRow >
@@ -162,7 +149,8 @@ export default class CompositeRow extends React.Component {
                   <div style={{display:'flex'}}>
 
                       {this.props.data.programStages[this.state.selectedStageIndex].events.map((stageEvent,id) => {
-                          component = ComponentCategories(stageEvent,id,this._handleEventChange(id,stageEvent).bind(this))
+                          hc = function(){this._handleChange(id,stageEvent,arguments)}.bind(this);
+                          component = ComponentCategories(stageEvent,id,hc)
                           component.value = this.state.stageData[id]
                           fields = [component]
                           return (

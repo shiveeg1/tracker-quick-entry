@@ -26,54 +26,41 @@ export default class RowComponent extends React.Component {
         this.props = props;
     }
 
-    _handleChange = (id,cell) => {
+    _handleChange = (id,cell,info) => {
         let row = this.state.rowValues;
         let type = cell.type;
         switch (type) {
-            case 'date': return (
-                function(event,date) {
-                    row[id] = date;
+            case 'date':
+                    row[id] = info[1];
                     this.setState({
                         rowValues:row
                     });
-                }
-            )
                 break;
-            case 'textbox': return (
-                function(event) {
-                    row[id] = event.target.value;
+            case 'textbox':
+                    row[id] = info[0].target.value;
                     this.setState({
                         rowValues: row
                     });
-                }
-            )
+
             break;
-            case 'numeric': return (
-                function(event) {
-                    row[id] = event.target.value;
+            case 'numeric':
+                    row[id] = info[0].target.value;
                     this.setState({
                         rowValues: row
                     });
-                }
-            )
+
             break;
-            case 'optionSet': return (
-                function(obj) {
-                    row[id] = cell.options[obj.target.value-1].displayName;
+            case 'optionSet':
+                    row[id] = cell.options[info[0].target.value-1].displayName;
                     this.setState({
                         rowValues: row
                     });
-                }
-            )
             break;
-            default: return (
-                function(event) {
-                    row[id] = event.target.value;
+            default:
+                    row[id] = info[0].target.value;
                     this.setState({
                         rowValues: row
                     });
-                }
-            )
         }
     }
 
@@ -95,7 +82,7 @@ export default class RowComponent extends React.Component {
         const buttonColor = this.context.muiTheme.rawTheme.palette.primary1Color;
         return (
             this.props.data.map((cell,id) => {
-                hc = this._handleChange(id,cell).bind(this);
+                hc = function(){this._handleChange(id,cell,arguments)}.bind(this);
                 let component = ComponentCategories(cell,id,hc);
                 let cellStyle= {};
                 component.value = this.state.rowValues[id];
