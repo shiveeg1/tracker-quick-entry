@@ -44,7 +44,8 @@ class App extends React.Component {
         this.props.d2.models.organisationUnits.get(orgUnit.id,{paging:false,fields:'id,name,programs[id,name,programStages[id,name,programStageDataElements[id,dataElement[id,name,optionSet[id,name,version]]]],organisationUnits,programTrackedEntityAttributes,trackedEntity]'})
         .then(orgUnitData => {
             orgUnitData.programs.forEach(oneProgram => {
-                dropdownProgList.push({id:oneProgram.id,displayName:oneProgram.name});
+                if(oneProgram.programTrackedEntityAttributes.valuesContainerMap.size > 0)
+                    dropdownProgList.push({id:oneProgram.id,displayName:oneProgram.name});
             })
             this.setState({
                 allOrgProgData: orgUnitData.programs,
@@ -58,8 +59,6 @@ class App extends React.Component {
     };
 
     _handleDropdownChange(obj) {
-        // TODO Hnadle following bugs :-
-        // Information Campaign / Conraceptive Voucher program and some others give error : Uncaught TypeError: Cannot read property 'id' of undefined
             this.setState({
                 selectedProg: obj.target.value
             },function(){
