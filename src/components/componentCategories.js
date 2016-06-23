@@ -28,7 +28,7 @@ export default function getComponent(cell,id,hc) {
                     },
                 };
     switch (cell.type) {
-        case 'date':
+        case 'DATE':
             component = Object.assign({}, fieldBase, {
                         component: DatePicker,
                         props: Object.assign({}, fieldBase.props, {
@@ -38,7 +38,7 @@ export default function getComponent(cell,id,hc) {
                         }),
                     });
             break;
-        case 'numeric':
+        case 'NUMBER':
             component = Object.assign({}, fieldBase, {
                         component: TextField,
                         changeEvent: 'onBlur',
@@ -47,7 +47,7 @@ export default function getComponent(cell,id,hc) {
                         }),
                     });
             break;
-        case 'textbox':
+        case 'TEXT':
             component = Object.assign({}, fieldBase, {
                         component: TextField,
                         changeEvent: 'onBlur',
@@ -69,9 +69,12 @@ export default function getComponent(cell,id,hc) {
                         }),
                     });
             break;
-        case 'boolean':
+        case 'BOOLEAN':
             component = Object.assign({}, fieldBase, {
                         component: Toggle,
+                        props: Object.assign({}, fieldBase.props, {
+                            onToggle: hc
+                        })
                     });
             break;
         case 'icon':

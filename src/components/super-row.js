@@ -36,21 +36,28 @@ export default class CompositeRow extends React.Component {
       let row = this.state.stageData;
       let type = cell.type;
       switch (type) {
-          case 'date':
+          case 'DATE':
                   row[id] = info[1];
                   this.setState({
                       stageData:row
                   });
               break;
-          case 'textbox':
+          case 'TEXT':
                   row[id] = info[0].target.value;
                   this.setState({
                       stageData: row
                   });
 
           break;
-          case 'numeric':
+          case 'NUMBER':
                   row[id] = info[0].target.value;
+                  this.setState({
+                      stageData: row
+                  });
+
+          break;
+          case 'BOOLEAN':
+                  row[id] = info[1].toString();
                   this.setState({
                       stageData: row
                   });

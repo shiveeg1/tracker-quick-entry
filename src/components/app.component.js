@@ -139,32 +139,33 @@ class App extends React.Component {
                  marginRight: '10px'
              }
         };
-
+        //TODO The data types are : TEXT, DATE, NUMBER, EMAIL, PHONE NUMBER, BOOLEAN, BOOLEAN
+        // TODO optionSet = TEXT && optionsetid
         const data ={
             headers: [
                 {
                     name:"Date Of Birth",
-                    type:"date",
+                    type:"DATE",
                     required:true
                 },
                 {
                     name:"Date Of Admission",
-                    type:"date",
+                    type:"DATE",
                     required:true
                 },
                 {
                     name:"First Name",
-                    type:"textbox",
+                    type:"TEXT",
                     required:true
                 },
                 {
                     name:"Last Name",
-                    type:"textbox",
+                    type:"TEXT",
                     required:false
                 },
                 {
                     name:"Age",
-                    type:"numeric",
+                    type:"NUMBER",
                     required:false
                 },
                 {
@@ -191,7 +192,7 @@ class App extends React.Component {
                 },
                 {
                     name:"AwesomePerson",
-                    type:"boolean",
+                    type:"BOOLEAN",
                     required:false
                 },
                 {
@@ -217,32 +218,32 @@ class App extends React.Component {
                     events: [
                         {
                             name: 'First name',
-                            type: 'textbox',
+                            type: 'TEXT',
                             required:true
                         },
                         {
                             name:"AwesomePerson",
-                            type:"boolean",
+                            type:"BOOLEAN",
                             required:false
                         },
                         {
                             name:"Date Of Admission",
-                            type:"date",
+                            type:"DATE",
                             required:true
                         },
                         {
                             name: 'Last name',
-                            type: 'textbox',
+                            type: 'TEXT',
                             required:true
                         },
                         {
                             name:"AwesomePerson",
-                            type:"boolean",
+                            type:"BOOLEAN",
                             required:false
                         },
                         {
                             name:"Date Of Birth",
-                            type:"date",
+                            type:"DATE",
                             required:true
                         }
                     ]
@@ -252,17 +253,17 @@ class App extends React.Component {
                     events: [
                         {
                             name: 'nick name',
-                            type: 'textbox',
+                            type: 'TEXT',
                             required:true
                         },
                         {
                             name:"AwesomePerson",
-                            type:"boolean",
+                            type:"BOOLEAN",
                             required:false
                         },
                         {
                             name:"Date Of Birth",
-                            type:"date",
+                            type:"DATE",
                             required:true
                         }
                     ]

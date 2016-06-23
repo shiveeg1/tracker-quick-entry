@@ -30,23 +30,30 @@ export default class RowComponent extends React.Component {
         let row = this.state.rowValues;
         let type = cell.type;
         switch (type) {
-            case 'date':
+            case 'DATE':
                     row[id] = info[1];
                     this.setState({
                         rowValues:row
                     });
                 break;
-            case 'textbox':
+            case 'TEXT':
                     row[id] = info[0].target.value;
                     this.setState({
                         rowValues: row
                     });
 
             break;
-            case 'numeric':
+            case 'NUMBER':
                     row[id] = info[0].target.value;
                     this.setState({
                         rowValues: row
+                    });
+
+            break;
+            case 'BOOLEAN':
+                    row[id] = info[1].toString();
+                    this.setState({
+                        stageData: row
                     });
 
             break;
