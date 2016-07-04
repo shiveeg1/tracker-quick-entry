@@ -11,20 +11,24 @@ import Create from 'material-ui/lib/svg-icons/content/create';
 import Error from 'material-ui/lib/svg-icons/alert/error';
 import IconButton from 'material-ui/lib/icon-button';
 import RaisedButton from 'material-ui/lib/raised-button';
-import FlatButton from 'material-ui/lib/flat-button';
+import ButtonWrapper from './button-wrapper';
 import FontIcon from 'material-ui/lib/font-icon';
 
 //App
 import HackyDropdown from './drop-down';
 
+
+//TODO The data types are : TEXT, DATE, NUMBER, EMAIL, PHONE NUMBER, BOOLEAN, BOOLEAN
 export default function getComponent(cell,id,hc) {
     let component= {};
 
     const fieldBase = {
-                    name: "customComponent",
+                    name: cell.id,
                     component: TextField,
                     props: {
                         style: { width: '100%' },
+                        defaultValue:'',
+                        key: cell.id,
                     },
                 };
     switch (cell.type) {
@@ -80,18 +84,20 @@ export default function getComponent(cell,id,hc) {
         case 'icon':
             component = Object.assign({}, fieldBase, {
                         component: IconButton,
-                        name:'icon'
+                        displayName:'icon'
                     });
             break;
         case 'button':
             component = Object.assign({}, fieldBase, {
-                        name: 'button',
-                        component: FlatButton,
+                        displayName: 'button',
+                        component: ButtonWrapper,
                         props : {
                             primary: true,
+                            validating:false,
                         }
                     });
             break;
+
         default:
             component = Object.assign({}, fieldBase, {
                         component: TextField,

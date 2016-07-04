@@ -3,206 +3,211 @@ import times from 'lodash.times';
 // material-ui
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/lib/table';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/lib/card';
+import FontIcon from 'material-ui/lib/font-icon';
 //App
-import RowComponent from './table-row';
 import ProgramStageDropDown from './drop-down';
 import ComponentCategories from './componentCategories';
 //d2-ui
 import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
 /*
-TODO change collapsible-div height dynamically
-TODO collapse option
+TODO collapse option icon
 TODO change stageData state structure accordingly. Maybe array of objects
 */
 export default class CompositeRow extends React.Component {
-  constructor(props,context){
-    super(props);
-    this.context=context;
-    this.state = {
-      animHeight:'0px',
-      selectedStageIndex: 0,
-      stageData : []
+    constructor(props,context){
+    	super(props);
+    	this.context=context;
+    	let basicState = {
+    	    animHeight:'0px',
+    	    selectedStageIndex: 0,
+    	    stageData : []
+    	}
+    	this.state = Object.assign({},{
+    		rowValues: [],
+    		status: <FontIcon
+                className="material-icons"
+                color={this.context.muiTheme.rawTheme.palette.primary1Color}>mode_edit
+                </FontIcon>,
+    		statusColor: this.context.muiTheme.rawTheme.palette.primary1Color,
+    	},basicState);
+    	this.props = props;
+    	this.stageDat = [];
     }
-    this.props = props;
-  }
 
-  _handleStageSelect(obj) {
-    this.setState({
-        selectedStageIndex: obj.target.value
-    });
-  }
-
-  _handleChange = (id,cell,info) => {
-      let row = this.state.stageData;
-      let type = cell.type;
-      switch (type) {
-          case 'DATE':
-                  row[id] = info[1];
-                  this.setState({
-                      stageData:row
-                  });
-              break;
-          case 'TEXT':
-                  row[id] = info[0].target.value;
-                  this.setState({
-                      stageData: row
-                  });
-
-          break;
-          case 'NUMBER':
-                  row[id] = info[0].target.value;
-                  this.setState({
-                      stageData: row
-                  });
-
-          break;
-          case 'BOOLEAN':
-                  row[id] = info[1].toString();
-                  this.setState({
-                      stageData: row
-                  });
-
-          break;
-          case 'optionSet':
-                  row[id] = cell.options[info[0].target.value-1].displayName;
-                  this.setState({
-                      stageData: row
-                  });
-          break;
-          default:
-                  row[id] = info[0].target.value;
-                  this.setState({
-                      stageData: row
-                  });
+    componentWillReceiveProps() {
+	    this.setState({
+		    rowValues:[]
+	    })
       }
-  }
 
-  _handleUpdateFeild() {
-      // validate stuff here
-      console.log("updated");
-  }
+    _handleStageSelect(obj) {
+        this.setState({
+        	selectedStageIndex: obj.target.value
+        });
+    }
 
-  toggleHeight() {
-      if(this.state.animHeight === '0px') {
-          this.setState({
-              animHeight: '500px'
-          })
-      }
-      else {
-          this.setState({
-              animHeight: '0px'
-          })
-      }
-  }
+    _handleButtonClick() {
+        this.setState({
+        	animHeight: this.state.animHeight=='0px'?'500px':'0px',
+        	status: <FontIcon className="material-icons">done</FontIcon>,
+        	statusColor: this.context.muiTheme.rawTheme.palette.successColor
+        })
+    }
+
+    _handleUpdateFeild() {
+        // TODO validate required feilds and save on server
+        console.log("feild updated");
+    }
+
+    toggleHeight() {
+        if(this.state.animHeight === '0px') {
+        	this.setState({
+        		animHeight: '500px'
+        	})
+        }
+        else {
+        	this.setState({
+        		animHeight: '0px'
+        	})
+        }
+    }
+
+    _handleChange = (id,cell,info) => {
+        let row = this.state.rowValues;
+        let type = cell.type;
+        switch (type) {
+        	case 'DATE':
+        			row[id] = info[1];
+        			this.stageDat=row;
+        			this.setState({
+        				rowValues:row
+        			});
+        		break;
+        	case 'TEXT':
+        			row[id] = info[0].target.value;
+        			this.stageDat=row;
+        			this.setState({
+        				rowValues: row
+        			});
+        	break;
+        	case 'NUMBER':
+        			row[id] = info[0].target.value;
+        			this.stageDat=row;
+        			this.setState({
+        				rowValues: row
+        			});
+        	break;
+        	case 'BOOLEAN':
+        			row[id] = info[1].toString();
+        			this.stageDat=row;
+        			this.setState({
+        				stageData: row
+        			});
+        	break;
+        	case 'optionSet':
+        			row[id] = cell.options[info[0].target.value-1].displayName;
+        			this.stageDat=row;
+        			this.setState({
+        				rowValues: row
+        			});
+        	break;
+        	default:
+        			row[id] = info[0].target.value;
+        			this.stageDat=row;
+        			this.setState({
+        				rowValues: row
+        			});
+        }
+    }
+
+    renderRow() {
+        const style = {
+            rowStyle: {
+                position:"static",
+                display:"inline-block",
+                padding:0,
+                backgroundColor:'aliceBlue'
+            },
+            wrapperStyle: {
+                position:"static",
+                display:"inline-block",
+                paddingLeft:24,
+                paddingRight:24,
+                width:152
+            }
+        }
+        let handleChangeRef = null;
+        const buttonColor = this.context.muiTheme.rawTheme.palette.primary1Color;
+        let fieldList = this.props.rowData.map((cell,id) => {
+        handleChangeRef = function() {this._handleChange(id,cell,arguments)}.bind(this);
+        let component = ComponentCategories(cell,id,handleChangeRef);
+        let cellStyle= {};
+        component.value = this.state.rowValues[id];
+        if(component.displayName === 'button') {
+        	cell.label = cell.label === 'null' ? this.props.label : cell.label
+        	component.props.labelStyle = {color:this.context.muiTheme.rawTheme.palette.primary1Color};
+        	component.props.onClick=this._handleButtonClick.bind(this);
+        	component.props.label=cell.label;
+        	component.props.style = {color:this.state.statusColor}
+        	component.props.icon = this.state.status;
+        	cellStyle= cell.cellStyle;
+        }
+        else if (component.displayName ==='icon') {
+        	component.props.children = this.state.status;
+        }
+        return component;
+        })
+        return (
+          <FormBuilder
+              key={this.props.rowData.id+"row"}
+              fields={fieldList} onUpdateField={this._handleUpdateFeild}
+              style={style.rowStyle}
+              fieldWrapStyle={style.wrapperStyle} />
+        )
+    }
+
   render() {
-    const styles = {
-      noPad : {
-        padding:'0px',
-        height: 0,
-        maxHeight:this.state.animHeight,
-        transition:'max-height 1s ease'
-      },
-      cardStyle : {
-        maxHeight:this.state.animHeight,
-        transition:'max-height 1s ease',
-        overflowX: 'auto',
-      }
-    }
+	const styles = {
+        noPad : {
+    		padding:'0px',
+    		borderTop:this.state.animHeight=='0px'?'solid 0px #bdbdbd':'solid 1px #bdbdbd',
+    		maxHeight:this.state.animHeight,
+    		transition:'all 1s ease'
+        },
+	    cardStyle : {
+    		maxHeight:this.state.animHeight,
+    		transition:'max-height 1s ease',
+    		overflowX: 'auto',
+        }
+	}
 
-    const divStyles = {
-        display:'inline-block',
-        border: '1px solid',
-        borderColor: this.context.muiTheme.rawTheme.palette.borderColor,
-        borderRadius: '2px',
-        padding: '10px',
-        marginLeft: '2px',
-        width: 'auto'
-    }
-
-    const bodyStyles= {
-        overflowX:'visible',
-        width: this.props.data.length*150
-    }
-
-    const programNames = this.props.data.programStages.map((stage,index) => (
-        {displayName: stage.name, id: index}
-    ))
-    let component = {}, fields = [], hc=null;
-    return (
+	return (
 //Single outer-row start
-      <TableRow >
-      <TableRowColumn colSpan={this.props.data.headers.length} style={styles.noPad}>
-      <Table {...this.props.tableProps}>
-          <TableBody {...this.props.tableBodyProps} >
-          {/*Row1 for data Entry*/}
-          <RowComponent data={this.props.data.headers} expandToggle={this.toggleHeight.bind(this)}/>
-
-          {/*Row2 for expandable Tab*/}
-          <TableRow style={styles.noPad}>
-          <TableRowColumn colSpan={this.props.data.headers.length} style={styles.noPad}>
-          <Card style={styles.cardStyle}>
-              <div style={{display:'flex'}}>
-                  <CardHeader
-                    title="Program Stage :"
-                    style={{height:'30px'}}
-                  />
-                  <ProgramStageDropDown value='dropValue'
-                      onChange={this._handleStageSelect.bind(this)}
-                      menuItems={programNames}
-                      includeEmpty={true}
-                      emptyLabel='Select Program' />
-              </div>
-              <CardText>
-                  <div style={{display:'flex'}}>
-
-                      {this.props.data.programStages[this.state.selectedStageIndex].events.map((stageEvent,id) => {
-                          hc = function(){this._handleChange(id,stageEvent,arguments)}.bind(this);
-                          component = ComponentCategories(stageEvent,id,hc)
-                          component.value = this.state.stageData[id]
-                          fields = [component]
-                          return (
-                              <div key={id} style={divStyles}>
-                                  <p>{stageEvent.name} :</p>
-                                  <FormBuilder key={id} fields={fields} onUpdateField={this._handleUpdateFeild} />
-                              </div>
-                          )
-                      })}
-                  </div>
-              </CardText>
-
-
-          </Card>
-          </TableRowColumn>
-          </TableRow>
-          </TableBody>
-      </Table>
-      </TableRowColumn>
-      </TableRow>
+    	<TableRow >
+        	<TableRowColumn colSpan={this.props.rowData.length} style={styles.noPad}>
+        		<Card>
+            		<div>
+            			<CardText style={{padding:0}}>
+            			{this.renderRow()}
+            			</CardText>
+            			<CardText style={styles.noPad}>
+            			  Program stages go here<br/>
+            			</CardText>
+            		</div>
+        		</Card>
+        	</TableRowColumn>
+    	</TableRow>
 //Single outer-row close.
 
-    )
+	)
   }
 }
 
 CompositeRow.propTypes = {
-    tableProps: React.PropTypes.object,
-    tableHeaderProps: React.PropTypes.object,
-    tableBodyProps: React.PropTypes.object,
-    data: React.PropTypes.shape({
-        headers: React.PropTypes.arrayOf(React.PropTypes.shape({
-            name: React.PropTypes.string.isRequired,
-            type: React.PropTypes.string.isRequired,
-            required: React.PropTypes.bool
-        })).isRequired,
-        programStages: React.PropTypes.arrayOf(React.PropTypes.shape({
-            name: React.PropTypes.string,
-            events: React.PropTypes.arrayOf(React.PropTypes.shape({
-                name: React.PropTypes.string.isRequired,
-                type: React.PropTypes.string.isRequired,
-                required: React.PropTypes.bool
-            })).isRequired
-        }))
-    }).isRequired
+	rowData: React.PropTypes.array.isRequired,
+	tableProps: React.PropTypes.object,
+	tableHeaderProps: React.PropTypes.object,
+	tableBodyProps: React.PropTypes.object,
 }
 
-CompositeRow.contextTypes = {muiTheme: React.PropTypes.object.isRequired};
+CompositeRow.contextTypes = {muiTheme: React.PropTypes.object.isRequired, programObservable : React.PropTypes.object};

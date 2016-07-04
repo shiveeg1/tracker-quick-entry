@@ -1,6 +1,6 @@
 import React from 'react';
 import log from 'loglevel';
-
+import Rx from 'rx';
 //d2
 import HeaderBar from 'd2-ui/lib/header-bar/HeaderBar.component';
 import OrgUnitTree from 'd2-ui/lib/org-unit-tree';
@@ -27,11 +27,18 @@ class App extends React.Component {
             d2: this.props.d2,
             root: this.props.root,
             muiTheme: AppTheme,
-        };
+            programObservable: this.programObservable,
+        }
     }
 
+    componentWillMount() {
+        this.programObservable = new Rx.Subject();
+        console.log(typeof(this.programObservable));
+    }
+
+
     componentDidMount() {
-    console.log("did mount");
+        console.log("did mount");
     }
 
     componentWillUnmount() {
@@ -41,7 +48,8 @@ class App extends React.Component {
     _handleOrgTreeClick(event, orgUnit) {
         // fecthing all programs under that org-unit
         let dropdownProgList = [];
-        this.props.d2.models.organisationUnits.get(orgUnit.id,{paging:false,fields:'id,name,programs[id,name,programStages[id,name,programStageDataElements[id,dataElement[id,name,optionSet[id,name,version]]]],organisationUnits,programTrackedEntityAttributes,trackedEntity]'})
+        console.log(orgUnit.id);
+        this.props.d2.models.organisationUnits.get(orgUnit.id,{paging:false,fields:'id,name,programs[*,id,name,programIndicators[*],dataEntryForm,attributeValues,enrollmentDateLabel,registration,useFirstStageDuringRegistration,programStages[id,name,programStageDataElements[id,dataElement[id,name,optionSet[id,name,version]]]],organisationUnits,programTrackedEntityAttributes,trackedEntity]'})
         .then(orgUnitData => {
             orgUnitData.programs.forEach(oneProgram => {
                 if(oneProgram.programTrackedEntityAttributes.valuesContainerMap.size > 0)
@@ -56,14 +64,10 @@ class App extends React.Component {
         .catch(err => {
             log.error('Failed to load Org programs',err);
         })
-    };
+    }
 
     _handleDropdownChange(obj) {
-            this.setState({
-                selectedProg: obj.target.value
-            },function(){
-                let selectedProgData = this.state.allOrgProgData.valuesContainerMap.get(this.state.selectedProg);
-            });
+        this.programObservable.onNext(obj.target.value);
     }
 
     render() {
@@ -74,19 +78,6 @@ class App extends React.Component {
                 fontWeight: 100,
                 color: AppTheme.rawTheme.palette.textColor,
                 padding: '6px 16px',
-            },
-            card: {
-                marginTop: 8,
-                marginRight: '1rem',
-            },
-            cardTitle: {
-                background: AppTheme.rawTheme.palette.primary2Color,
-                height: 62,
-            },
-            cardTitleText: {
-                fontSize: 28,
-                fontWeight: 100,
-                color: AppTheme.rawTheme.palette.alternateTextColor,
             },
             forms: {
                 minWidth: AppTheme.forms.minWidth,
@@ -139,137 +130,6 @@ class App extends React.Component {
                  marginRight: '10px'
              }
         };
-        //TODO The data types are : TEXT, DATE, NUMBER, EMAIL, PHONE NUMBER, BOOLEAN, BOOLEAN
-        // TODO optionSet = TEXT && optionsetid
-        const data ={
-            headers: [
-                {
-                    name:"Date Of Birth",
-                    type:"DATE",
-                    required:true
-                },
-                {
-                    name:"Date Of Admission",
-                    type:"DATE",
-                    required:true
-                },
-                {
-                    name:"First Name",
-                    type:"TEXT",
-                    required:true
-                },
-                {
-                    name:"Last Name",
-                    type:"TEXT",
-                    required:false
-                },
-                {
-                    name:"Age",
-                    type:"NUMBER",
-                    required:false
-                },
-                {
-                    name:"Gender",
-                    type:"optionSet",
-                    options: [
-                        {
-                            id: '1',
-                            displayName: 'male'
-                        },
-                        {
-                            id: '2',
-                            displayName: 'female'
-                        },
-                        {
-                            id: '3',
-                            displayName: 'other'
-                        }
-                    ],
-                    required:true,
-                    onChange: function() {
-                        console.log("in on change");
-                    }
-                },
-                {
-                    name:"AwesomePerson",
-                    type:"BOOLEAN",
-                    required:false
-                },
-                {
-                    name:"Register",
-                    type:"button",
-                    label:"Save",
-                    required:true,
-                    cellStyle:{
-                        position:'absolute',
-                        right:'0',
-                        width:100,
-                        backgroundColor:'white',
-                        borderLeft:'solid 1px #bdbdbd',
-                        zIndex:1,
-                        paddingTop:0,
-                        textAlign:'center'
-                    }
-                }
-            ],
-            programStages: [
-                {
-                    name: 'stage 1',
-                    events: [
-                        {
-                            name: 'First name',
-                            type: 'TEXT',
-                            required:true
-                        },
-                        {
-                            name:"AwesomePerson",
-                            type:"BOOLEAN",
-                            required:false
-                        },
-                        {
-                            name:"Date Of Admission",
-                            type:"DATE",
-                            required:true
-                        },
-                        {
-                            name: 'Last name',
-                            type: 'TEXT',
-                            required:true
-                        },
-                        {
-                            name:"AwesomePerson",
-                            type:"BOOLEAN",
-                            required:false
-                        },
-                        {
-                            name:"Date Of Birth",
-                            type:"DATE",
-                            required:true
-                        }
-                    ]
-                },
-                {
-                    name: 'stage 2',
-                    events: [
-                        {
-                            name: 'nick name',
-                            type: 'TEXT',
-                            required:true
-                        },
-                        {
-                            name:"AwesomePerson",
-                            type:"BOOLEAN",
-                            required:false
-                        },
-                        {
-                            name:"Date Of Birth",
-                            type:"DATE",
-                            required:true
-                        }
-                    ]
-                }
-            ]
-        };
 
         const tableProps = {
             height:'auto',
@@ -312,12 +172,7 @@ class App extends React.Component {
                         </div>
                      }
 
-                    { this.state.selectedProg &&
-                        <div style={styles.table}>
-                            <EditTable tableProps={tableProps} tableHeaderProps = {tableHeaderProps} tableBodyProps={tableBodyProps} data={data} rowCount={10} />
-                        </div>
-                    }
-
+                     <EditTable style={styles.table} tableProps={tableProps} tableHeaderProps = {tableHeaderProps} tableBodyProps={tableBodyProps} rowCount={10} />
                 </div>
             </div>
         );
@@ -325,6 +180,6 @@ class App extends React.Component {
 }
 
 App.propTypes = { d2: React.PropTypes.object, root: React.PropTypes.any };
-App.childContextTypes = { d2: React.PropTypes.object, root: React.PropTypes.any, muiTheme: React.PropTypes.object.isRequired };
+App.childContextTypes = { d2: React.PropTypes.object, root: React.PropTypes.any, muiTheme: React.PropTypes.object.isRequired, programObservable : React.PropTypes.object };
 
 export default App;

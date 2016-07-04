@@ -14,66 +14,146 @@ import CompositeRow from './super-row';
     TODO programStages
     TODO validations for fields */
 export default class EditTable extends React.Component {
-
-    constructor(props) {
+    constructor(props,context) {
         super(props);
+        this.state = {
+          selectedProgData:[]
+        };
     }
+
+    componentWillMount () {
+        this.subscription = (
+            this.context.programObservable
+            .subscribe(
+                selectedProg =>{ this.subscriptionHandler(selectedProg); },
+                error => console.log('onError : ', error),
+                () => console.log('Subscription Completed')
+        ))
+    }
+
+    componentWillUnmount () {
+        this.subscription.dispose();
+    }
+
+    shouldComponentUpdate (nextProps, nextState) {
+        if(JSON.stringify(this.state.selectedProgData)!=JSON.stringify(nextState.selectedProgData))
+            return true;
+        return false;
+    }
+
+    subscriptionHandler (selectedProg) {
+        let attributeRow = [];
+        let index = 0;
+        this.context.d2.models.program.get(selectedProg,{paging:false,fields:'trackedEntity,programTrackedEntityAttributes[id,mandatory,valueType,trackedEntityAttribute[name,optionSet[id,name,options[id,name]]]]'}).then(function(output){
+        output.programTrackedEntityAttributes.forEach(
+            programTrackedEntityAttributeSingle => {
+            index++;
+            let attributeColData = {};
+            attributeColData.id=programTrackedEntityAttributeSingle.id;
+            attributeColData.name = programTrackedEntityAttributeSingle.trackedEntityAttribute.name;
+            if(!!programTrackedEntityAttributeSingle.trackedEntityAttribute.optionSet)
+            {
+                attributeColData.type="optionSet";
+                attributeColData.options=[];
+                programTrackedEntityAttributeSingle.trackedEntityAttribute.optionSet.options.forEach(
+                (optionValue,idx) => {
+                    let optionJSON = {};
+                    optionJSON.id=idx+1;
+                    optionJSON.displayName=optionValue.name;
+                    attributeColData.options.push(optionJSON);
+                    }
+                )
+            }
+            else
+                attributeColData.type=programTrackedEntityAttributeSingle.valueType;
+
+            attributeColData.required=programTrackedEntityAttributeSingle.mandatory;
+            attributeRow.push(attributeColData);
+            if(index==output.programTrackedEntityAttributes.size)
+            {
+                attributeRow.push({
+                    name:"Register",
+                    type:"button",
+                    id:output.trackedEntity.id,
+                    label:"Save",
+                    required:true,
+                    cellStyle:{
+                        position:'absolute',
+                        right:'0',
+                        width:152,
+                        backgroundColor:'white',
+                        borderLeft:'solid 1px #bdbdbd',
+                        zIndex:1,
+                        paddingTop:0,
+                        textAlign:'center',
+                        paddingLeft:24,
+                        paddingRight:24,
+                    }
+                });
+                attributeRow.id=selectedProg;
+                this.setState({selectedProgData:attributeRow})
+            }
+        })
+    }.bind(this));
+}
 
     renderHeader() {
         const headerStyle = {
-            width:'auto',
+            width:'152',
             textAlign: 'left'
         }
 
-        return ( this.props.data.headers.map((cell,id) => {
+        return ( this.state.selectedProgData.map((cell,id) => {
             let headerPosStyle = cell.label == 'Save' ? {paddingTop:20,display:'block'} : {};
             let cellStyle= !!cell.cellStyle ? cell.cellStyle :headerStyle;
             return (
-                <TableHeaderColumn style={cellStyle} key={id}><span style={headerPosStyle}>{cell.name}</span></TableHeaderColumn>
+                <TableHeaderColumn
+                    style={cellStyle}
+                    key={id}>
+                    <span style={headerPosStyle}>{cell.name}</span>
+                    </TableHeaderColumn>
             )
-
         }))
-    }
+}
 
     render() {
         const bodyStyles= {
             overflowX:'visible',
-        width: this.props.data.headers.length*150
+        width: this.state.selectedProgData.length*200
         }
         let index=1;
         return(
-            <Table {...this.props.tableProps} bodyStyle={bodyStyles} style={{width:this.props.data.headers.length*150}}>
+            this.state.selectedProgData.length>0 &&
+            <div style={this.props.style}>
+            <Table {...this.props.tableProps} bodyStyle={bodyStyles} style={{width:this.state.selectedProgData.length*200}}>
                 <TableHeader {...this.props.tableHeaderProps} >
-                  <TableRow>
-                     {this.renderHeader()}
-                  </TableRow>
+                    <TableRow>
+                        {this.renderHeader()}
+                    </TableRow>
                 </TableHeader>
-                <TableBody {...this.props.tableBodyProps} >
-                  {times(this.props.rowCount,function () {
-                      return (
-                        <CompositeRow key={index++} {...this.props}/>
-                      )
-
-                  }.bind(this))}
+                <TableBody {...this.props.tableBodyProps}>
+                    {times(this.props.rowCount,function () {
+                    return (
+                    <CompositeRow
+                        key={index++}
+                        obs ={this.context.programObservable}
+                        rowData={this.state.selectedProgData}
+                        {...this.props}/>
+                    )
+                    }.bind(this))}
                 </TableBody>
             </Table>
+            </div>
         )
     }
 }
 
 EditTable.propTypes = {
+    style : React.PropTypes.object.isRequired,
     tableProps: React.PropTypes.object,
     tableHeaderProps: React.PropTypes.object,
     tableBodyProps: React.PropTypes.object,
-    data: React.PropTypes.shape({
-        headers: React.PropTypes.arrayOf(React.PropTypes.shape({
-            name: React.PropTypes.string.isRequired,
-            type: React.PropTypes.string.isRequired,
-            required: React.PropTypes.bool
-        })).isRequired,
-        programStages: React.PropTypes.array
-    }).isRequired,
     rowCount: React.PropTypes.number,
 };
 EditTable.defaultProps = {rowCount:1};
-EditTable.contextTypes = {};
+EditTable.contextTypes = { d2: React.PropTypes.object , programObservable: React.PropTypes.object };
