@@ -21,6 +21,7 @@ const theme = {
         disabledColor: ColorManipulator.fade(Colors.darkBlack, 0.3),
         errorColor: Colors.red500,
         successColor: Colors.green500,
+        warningColor: Colors.amberA700
     },
 };
 

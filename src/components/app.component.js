@@ -67,7 +67,7 @@ class App extends React.Component {
     }
 
     _handleDropdownChange(obj) {
-        this.programObservable.onNext(obj.target.value);
+        this.programObservable.onNext({selectedProg:obj.target.value,selectedOrg:this.state.selectedOrg});
     }
 
     render() {

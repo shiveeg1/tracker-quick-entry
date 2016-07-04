@@ -9,18 +9,19 @@ import ProgramStageDropDown from './drop-down';
 import ComponentCategories from './componentCategories';
 //d2-ui
 import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
+import dhis2 from 'd2-ui/lib/header-bar/dhis2';
 /*
 TODO collapse option icon
 TODO change stageData state structure accordingly. Maybe array of objects
 */
 export default class CompositeRow extends React.Component {
     constructor(props,context){
-    	super(props);
+    	super(props,context);
     	this.context=context;
     	let basicState = {
     	    animHeight:'0px',
     	    selectedStageIndex: 0,
-    	    stageData : []
+    	    stageData : [],
     	}
     	this.state = Object.assign({},{
     		rowValues: [],
@@ -30,6 +31,8 @@ export default class CompositeRow extends React.Component {
                 </FontIcon>,
     		statusColor: this.context.muiTheme.rawTheme.palette.primary1Color,
     	},basicState);
+
+        this.d2 = context.d2;
     	this.props = props;
     	this.stageDat = [];
     }
@@ -46,12 +49,84 @@ export default class CompositeRow extends React.Component {
         });
     }
 
-    _handleButtonClick() {
-        this.setState({
-        	animHeight: this.state.animHeight=='0px'?'500px':'0px',
-        	status: <FontIcon className="material-icons">done</FontIcon>,
-        	statusColor: this.context.muiTheme.rawTheme.palette.successColor
+    getTodayDate() {
+        let today = new Date();
+        let year = (today.getFullYear()).toString();
+        let month = (today.getMonth() + 1) < 10 ? "0"+(today.getMonth()+1) : (today.getMonth()+1).toString();
+        let date = today.getDate() < 10 ? "0"+today.getDate() : (today.getDate()).toString();
+        let todayDate = year+"-"+month+"-"+date;
+        return todayDate;
+    }
+
+    handleEnroll(instanceId) {
+        let enrollObj = {};
+        enrollObj["trackedEntityInstance"] = instanceId;
+        enrollObj["program"] = this.props.rowData.programId;
+        enrollObj["status"] = "ACTIVE";
+        enrollObj["orgUnit"] = this.props.rowData.orgUnit;
+
+        enrollObj["enrollmentDate"] = this.getTodayDate();
+        enrollObj["incidentDate"] = this.getTodayDate();
+
+        let ifenroll = true;
+        if(ifenroll) {
+            this.context.d2.Api.getApi().post("enrollments",enrollObj)
+            .then(response => {
+                let enrollId= response.response.importSummaries[0].reference;
+                console.log("enrol id : "+enrollId);
+                return true;
+            })
+            .catch(err => console.log('failed to enroll TEI instance '+err));
+        }
+        return false;
+     }
+
+    registerTEI() {
+        let attributeList = [], registerPayload = {};
+        let size = this.props.rowData.size;
+        this.props.rowData.forEach((cell,index) => {
+            if(this.state.rowValues[index] === undefined && (index != (size-1))) {
+                return false;
+            }
+            else {
+                attributeList.push({attribute: cell.id, value: this.state.rowValues[index]})
+            }
         })
+        registerPayload["attributes"] = attributeList;
+        registerPayload["trackedEntity"] = this.props.rowData.trackedEntityId;
+        registerPayload["orgUnit"] = this.props.rowData.orgUnit;
+        let regFlag = true;
+        if(regFlag) {
+            this.d2.Api.getApi().post("trackedEntityInstances",registerPayload)
+            .then(response => {
+                let instanceId = response.response.reference;
+                console.log("reg id : "+instanceId);
+                if(this.handleEnroll(instanceId) === true)
+                    return true;
+            })
+            .catch(err => console.log('failed to register TEI instance '+err));
+        }
+        return false;
+    }
+
+    _handleButtonClick() {
+        if(this.registerTEI() === true) {
+            console.log("inside if");
+            this.setState({
+            	animHeight: this.state.animHeight=='0px'?'500px':'0px',
+            	status: <FontIcon className="material-icons">done</FontIcon>,
+            	statusColor: this.context.muiTheme.rawTheme.palette.successColor
+            })
+        }
+        else {
+            console.log("inside else");
+            this.setState({
+            	animHeight: this.state.animHeight=='0px'?'500px':'0px',
+            	status: <FontIcon className="material-icons">warning</FontIcon>,
+            	statusColor: this.context.muiTheme.rawTheme.palette.warningColor
+            })
+        }
+
     }
 
     _handleUpdateFeild() {
@@ -159,7 +234,7 @@ export default class CompositeRow extends React.Component {
         })
         return (
           <FormBuilder
-              key={this.props.rowData.id+"row"}
+              key={this.props.rowData.programId+"row"}
               fields={fieldList} onUpdateField={this._handleUpdateFeild}
               style={style.rowStyle}
               fieldWrapStyle={style.wrapperStyle} />
@@ -202,7 +277,7 @@ export default class CompositeRow extends React.Component {
 	)
   }
 }
-
+// TODO add rowData propTypes
 CompositeRow.propTypes = {
 	rowData: React.PropTypes.array.isRequired,
 	tableProps: React.PropTypes.object,
@@ -210,4 +285,4 @@ CompositeRow.propTypes = {
 	tableBodyProps: React.PropTypes.object,
 }
 
-CompositeRow.contextTypes = {muiTheme: React.PropTypes.object.isRequired, programObservable : React.PropTypes.object};
+CompositeRow.contextTypes = {muiTheme: React.PropTypes.object.isRequired, programObservable : React.PropTypes.object, d2: React.PropTypes.object};

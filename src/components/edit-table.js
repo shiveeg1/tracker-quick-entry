@@ -41,15 +41,17 @@ export default class EditTable extends React.Component {
         return false;
     }
 
-    subscriptionHandler (selectedProg) {
-        let attributeRow = [];
-        let index = 0;
-        this.context.d2.models.program.get(selectedProg,{paging:false,fields:'trackedEntity,programTrackedEntityAttributes[id,mandatory,valueType,trackedEntityAttribute[name,optionSet[id,name,options[id,name]]]]'}).then(function(output){
+    subscriptionHandler (subscriptionObj) {
+        let selectedProg = subscriptionObj.selectedProg;
+        console.log(selectedProg);
+        let attributeRow = [], index = 0;
+        this.context.d2.models.program.get(selectedProg,{paging:false,fields:'trackedEntity,programTrackedEntityAttributes[id,mandatory,valueType,trackedEntityAttribute[id,name,optionSet[id,name,options[id,name]]]]'}).then(function(output){
         output.programTrackedEntityAttributes.forEach(
             programTrackedEntityAttributeSingle => {
             index++;
             let attributeColData = {};
-            attributeColData.id=programTrackedEntityAttributeSingle.id;
+            attributeColData.id=programTrackedEntityAttributeSingle.trackedEntityAttribute.id;
+            console.log(attributeColData.id);
             attributeColData.name = programTrackedEntityAttributeSingle.trackedEntityAttribute.name;
             if(!!programTrackedEntityAttributeSingle.trackedEntityAttribute.optionSet)
             {
@@ -90,7 +92,10 @@ export default class EditTable extends React.Component {
                         paddingRight:24,
                     }
                 });
-                attributeRow.id=selectedProg;
+                attributeRow.programId=selectedProg;
+                attributeRow.trackedEntityId=output.trackedEntity.id;
+                // attributeRow.id=output.trackedEntity.id;
+                attributeRow.orgUnit = subscriptionObj.selectedOrg;
                 this.setState({selectedProgData:attributeRow})
             }
         })
@@ -111,7 +116,7 @@ export default class EditTable extends React.Component {
                     style={cellStyle}
                     key={id}>
                     <span style={headerPosStyle}>{cell.name}</span>
-                    </TableHeaderColumn>
+                </TableHeaderColumn>
             )
         }))
 }
@@ -119,7 +124,7 @@ export default class EditTable extends React.Component {
     render() {
         const bodyStyles= {
             overflowX:'visible',
-        width: this.state.selectedProgData.length*200
+            width: this.state.selectedProgData.length*200
         }
         let index=1;
         return(
