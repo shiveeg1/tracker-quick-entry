@@ -74,19 +74,31 @@ export default class CompositeRow extends React.Component {
             .then(response => {
                 let enrollId= response.response.importSummaries[0].reference;
                 console.log("enrol id : "+enrollId);
-                return true;
+                this.setState({
+                	animHeight: this.state.animHeight=='0px'?'500px':'0px',
+                	status: <FontIcon className="material-icons">done</FontIcon>,
+                	statusColor: this.context.muiTheme.rawTheme.palette.successColor
+                })
             })
-            .catch(err => console.log('failed to enroll TEI instance '+err));
+            .catch(err => {
+                console.log('failed to enroll TEI instance '+err);
+                this.setState({
+                	animHeight: this.state.animHeight=='0px'?'500px':'0px',
+                	status: <FontIcon className="material-icons">warning</FontIcon>,
+                	statusColor: this.context.muiTheme.rawTheme.palette.warningColor
+                })
+            });
         }
-        return false;
+        console.log("came to the end");
      }
 
     registerTEI() {
         let attributeList = [], registerPayload = {};
         let size = this.props.rowData.headers.size;
         this.props.rowData.headers.forEach((cell,index) => {
+            // TODO redo for a "mandatory" check
             if(this.state.rowValues[index] === undefined && (index != (size-1))) {
-                return false;
+                return 500;
             }
             else {
                 attributeList.push({attribute: cell.id, value: this.state.rowValues[index]})
@@ -100,35 +112,26 @@ export default class CompositeRow extends React.Component {
         if(regFlag) {
             this.d2.Api.getApi().post("trackedEntityInstances",registerPayload)
             .then(response => {
+                console.log(response);
                 let instanceId = response.response.reference;
                 console.log("reg id : "+instanceId);
-                if(this.handleEnroll(instanceId) === true)
-                    return true;
+                this.handleEnroll(instanceId);
             })
-            .catch(err => console.log('failed to register TEI instance '+err));
+            .catch(err => {
+                console.log('failed to register TEI instance '+err);
+                this.setState({
+                	animHeight: this.state.animHeight=='0px'?'500px':'0px',
+                	status: <FontIcon className="material-icons">warning</FontIcon>,
+                	statusColor: this.context.muiTheme.rawTheme.palette.warningColor
+                })
+            });
         }
-        return false;
+        console.log("came to the end");
     }
 
     _handleButtonClick() {
         console.log(this.props.rowData);
-        if(this.registerTEI() === true) {
-            console.log("inside if");
-            this.setState({
-            	animHeight: this.state.animHeight=='0px'?'500px':'0px',
-            	status: <FontIcon className="material-icons">done</FontIcon>,
-            	statusColor: this.context.muiTheme.rawTheme.palette.successColor
-            })
-        }
-        else {
-            console.log("inside else");
-            this.setState({
-            	animHeight: this.state.animHeight=='0px'?'500px':'0px',
-            	status: <FontIcon className="material-icons">warning</FontIcon>,
-            	statusColor: this.context.muiTheme.rawTheme.palette.warningColor
-            })
-        }
-
+        this.registerTEI();
     }
 
     _handleUpdateFeild() {
