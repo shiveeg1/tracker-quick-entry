@@ -9,10 +9,11 @@ const wrapperStyle = {
     right:0,
     paddingRight:24,
     paddingLeft:24,
-    paddingTop:8,
-    paddingBottom:8,
+    paddingTop:9,
+    paddingBottom:9,
+    height:36,
     width:152,
-    marginTop:-34,
+    marginTop:-1,
     borderLeft:'solid 1px #bdbdbd',
     borderTop:'solid 1px #bdbdbd'
 };

@@ -21,7 +21,7 @@ export default class CompositeRow extends React.Component {
     	let basicState = {
     	    animHeight:'0px',
     	    selectedStageIndex: 0,
-    	    stageData : [],
+    	    stageData : []
     	}
     	this.state = Object.assign({},{
     		rowValues: [],
@@ -83,8 +83,8 @@ export default class CompositeRow extends React.Component {
 
     registerTEI() {
         let attributeList = [], registerPayload = {};
-        let size = this.props.rowData.size;
-        this.props.rowData.forEach((cell,index) => {
+        let size = this.props.rowData.headers.size;
+        this.props.rowData.headers.forEach((cell,index) => {
             if(this.state.rowValues[index] === undefined && (index != (size-1))) {
                 return false;
             }
@@ -95,6 +95,7 @@ export default class CompositeRow extends React.Component {
         registerPayload["attributes"] = attributeList;
         registerPayload["trackedEntity"] = this.props.rowData.trackedEntityId;
         registerPayload["orgUnit"] = this.props.rowData.orgUnit;
+        console.log(registerPayload);
         let regFlag = true;
         if(regFlag) {
             this.d2.Api.getApi().post("trackedEntityInstances",registerPayload)
@@ -110,6 +111,7 @@ export default class CompositeRow extends React.Component {
     }
 
     _handleButtonClick() {
+        console.log(this.props.rowData);
         if(this.registerTEI() === true) {
             console.log("inside if");
             this.setState({
@@ -208,12 +210,13 @@ export default class CompositeRow extends React.Component {
                 display:"inline-block",
                 paddingLeft:24,
                 paddingRight:24,
-                width:152
+                width:152,
+                minHeight:36,
             }
         }
         let handleChangeRef = null;
         const buttonColor = this.context.muiTheme.rawTheme.palette.primary1Color;
-        let fieldList = this.props.rowData.map((cell,id) => {
+        let fieldList = this.props.rowData.headers.map((cell,id) => {
         handleChangeRef = function() {this._handleChange(id,cell,arguments)}.bind(this);
         let component = ComponentCategories(cell,id,handleChangeRef);
         let cellStyle= {};
@@ -250,23 +253,29 @@ export default class CompositeRow extends React.Component {
     		transition:'all 1s ease'
         },
 	    cardStyle : {
+            paddingTop:"0px",
+            paddingBottom:"0px",
+            borderTop:this.state.animHeight=='0px'?'solid 0px #bdbdbd':'solid 1px #bdbdbd',
     		maxHeight:this.state.animHeight,
-    		transition:'max-height 1s ease',
-    		overflowX: 'auto',
+    		transition:'all 1s ease'
         }
 	}
 
 	return (
 //Single outer-row start
     	<TableRow >
-        	<TableRowColumn colSpan={this.props.rowData.length} style={styles.noPad}>
+        	<TableRowColumn colSpan={this.props.rowData.headers.length} style={styles.noPad}>
         		<Card>
             		<div>
             			<CardText style={{padding:0}}>
             			{this.renderRow()}
             			</CardText>
-            			<CardText style={styles.noPad}>
-            			  Program stages go here<br/>
+                        <CardText style={styles.cardStyle}>
+                            <ProgramStageDropDown value="dropValue"
+                                onChange={this._handleStageSelect.bind(this)}
+                                menuItems={this.props.rowData.programStages}
+                                includeEmpty={true}
+                                emptyLabel="Select Stage"   />
             			</CardText>
             		</div>
         		</Card>
@@ -279,7 +288,14 @@ export default class CompositeRow extends React.Component {
 }
 // TODO add rowData propTypes
 CompositeRow.propTypes = {
-	rowData: React.PropTypes.array.isRequired,
+    rowData : React.PropTypes.shape({
+        headers: React.PropTypes.arrayOf(React.PropTypes.shape({
+            name: React.PropTypes.string.isRequired,
+            type: React.PropTypes.string.isRequired,
+            required: React.PropTypes.bool
+        })).isRequired,
+        programStages: React.PropTypes.array
+    }).isRequired,
 	tableProps: React.PropTypes.object,
 	tableHeaderProps: React.PropTypes.object,
 	tableBodyProps: React.PropTypes.object,

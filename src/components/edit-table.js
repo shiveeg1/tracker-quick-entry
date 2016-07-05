@@ -17,7 +17,10 @@ export default class EditTable extends React.Component {
     constructor(props,context) {
         super(props);
         this.state = {
-          selectedProgData:[]
+            selectedProgData:{
+                headers:[],
+                programStages:[],
+            }
         };
     }
 
@@ -36,22 +39,32 @@ export default class EditTable extends React.Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) {
-        if(JSON.stringify(this.state.selectedProgData)!=JSON.stringify(nextState.selectedProgData))
+        if(this.state.selectedProgData.programId!=nextState.selectedProgData.programId)
             return true;
         return false;
     }
 
     subscriptionHandler (subscriptionObj) {
         let selectedProg = subscriptionObj.selectedProg;
-        console.log(selectedProg);
-        let attributeRow = [], index = 0;
-        this.context.d2.models.program.get(selectedProg,{paging:false,fields:'trackedEntity,programTrackedEntityAttributes[id,mandatory,valueType,trackedEntityAttribute[id,name,optionSet[id,name,options[id,name]]]]'}).then(function(output){
+        let programData = {};
+        let attributeRow = [];
+        let programStages = [];
+        let index = 0;
+        if(selectedProg!="null"){
+        this.context.d2.models.program.get(selectedProg,{paging:false,fields:'trackedEntity,programTrackedEntityAttributes[id,mandatory,valueType,trackedEntityAttribute[id,name,optionSet[id,name,options[id,name]]]],programStages[id,name]'}).then(function(output){
+        output.programStages.forEach(
+            singleStage => {
+                let stageJSON = {};
+                stageJSON.id=singleStage.id;
+                stageJSON.displayName=singleStage.name;
+                programStages.push(stageJSON);
+            }
+        )
         output.programTrackedEntityAttributes.forEach(
             programTrackedEntityAttributeSingle => {
             index++;
             let attributeColData = {};
             attributeColData.id=programTrackedEntityAttributeSingle.trackedEntityAttribute.id;
-            console.log(attributeColData.id);
             attributeColData.name = programTrackedEntityAttributeSingle.trackedEntityAttribute.name;
             if(!!programTrackedEntityAttributeSingle.trackedEntityAttribute.optionSet)
             {
@@ -60,11 +73,12 @@ export default class EditTable extends React.Component {
                 programTrackedEntityAttributeSingle.trackedEntityAttribute.optionSet.options.forEach(
                 (optionValue,idx) => {
                     let optionJSON = {};
-                    optionJSON.id=idx+1;
+                    optionJSON.id=idx+2;
                     optionJSON.displayName=optionValue.name;
                     attributeColData.options.push(optionJSON);
                     }
                 )
+                attributeColData.options.unshift({id:"placeholder",displayName:"Select Option",disabled:true});
             }
             else
                 attributeColData.type=programTrackedEntityAttributeSingle.valueType;
@@ -92,15 +106,24 @@ export default class EditTable extends React.Component {
                         paddingRight:24,
                     }
                 });
-                attributeRow.programId=selectedProg;
-                attributeRow.trackedEntityId=output.trackedEntity.id;
-                // attributeRow.id=output.trackedEntity.id;
-                attributeRow.orgUnit = subscriptionObj.selectedOrg;
-                this.setState({selectedProgData:attributeRow})
+                programData.programId=selectedProg;
+                programData.trackedEntityId=output.trackedEntity.id;
+                programData.orgUnit = subscriptionObj.selectedOrg;
+                programData.headers = attributeRow;
+                programStages.unshift({id:'placeholder',displayName:'Select Program Stage',disabled:true})
+                programData.programStages = programStages;
+                this.setState({selectedProgData:programData})
             }
-        })
-    }.bind(this));
-}
+        })}.bind(this));
+        } else {
+            this.setState({
+                selectedProgData : {
+                    headers:[],
+                    programStages:[],
+                }
+            });
+        }
+    }
 
     renderHeader() {
         const headerStyle = {
@@ -108,7 +131,7 @@ export default class EditTable extends React.Component {
             textAlign: 'left'
         }
 
-        return ( this.state.selectedProgData.map((cell,id) => {
+        return ( this.state.selectedProgData.headers.map((cell,id) => {
             let headerPosStyle = cell.label == 'Save' ? {paddingTop:20,display:'block'} : {};
             let cellStyle= !!cell.cellStyle ? cell.cellStyle :headerStyle;
             return (
@@ -119,40 +142,82 @@ export default class EditTable extends React.Component {
                 </TableHeaderColumn>
             )
         }))
-}
+    }
+
+    _topScroll() {
+        if (this.flag) {
+            this.flag = !this.flag;
+            document.getElementsByClassName('scroll-wrapper')[0].scrollLeft =
+                document.getElementsByClassName('scroll-basic')[0].firstChild.scrollLeft
+        } else {
+            this.flag = !this.flag;
+        }
+
+    }
+    _bottomScroll() {
+        if (this.flag) {
+            this.flag = !this.flag;
+            document.getElementsByClassName('scroll-basic')[0].firstChild.scrollLeft =
+                document.getElementsByClassName('scroll-wrapper')[0].scrollLeft;
+        } else {
+            this.flag = !this.flag;
+        }
+    }
 
     render() {
-        const bodyStyles= {
-            overflowX:'visible',
-            width: this.state.selectedProgData.length*200
+        const styles = {
+            bodyStyles: {
+                overflowX:'visible',
+                width: this.state.selectedProgData.headers.length*200
+            },
+            scrollWrapperStyle: {
+                overflowX:"auto",
+                overflowY:"hidden",
+                height:"20px",
+                marginBottom:"-20px",
+                marginLeft:"10px"
+            },
+            scrollDivStyle: {
+                width:this.state.selectedProgData.headers.length*200,
+                display:"block",
+                height:"20px"
+            }
         }
+
         let index=1;
         return(
-            this.state.selectedProgData.length>0 &&
-            <div style={this.props.style}>
-            <Table {...this.props.tableProps} bodyStyle={bodyStyles} style={{width:this.state.selectedProgData.length*200}}>
-                <TableHeader {...this.props.tableHeaderProps} >
-                    <TableRow>
-                        {this.renderHeader()}
-                    </TableRow>
-                </TableHeader>
-                <TableBody {...this.props.tableBodyProps}>
-                    {times(this.props.rowCount,function () {
-                    return (
-                    <CompositeRow
-                        key={index++}
-                        obs ={this.context.programObservable}
-                        rowData={this.state.selectedProgData}
-                        {...this.props}/>
-                    )
-                    }.bind(this))}
-                </TableBody>
-            </Table>
+            this.state.selectedProgData.headers.length>0 &&
+            <div>
+                <div className="scroll-wrapper" style={styles.scrollWrapperStyle} onScroll={this._bottomScroll.bind(this)}>
+                    <div style={styles.scrollDivStyle}></div>
+                </div>
+                <div style={this.props.style}>
+                <div className="scroll-basic" onScroll={this._topScroll.bind(this)}>
+                    <Table {...this.props.tableProps} bodyStyle={styles.bodyStyles} style={{width:this.state.selectedProgData.headers.length*200}}>
+                        <TableHeader {...this.props.tableHeaderProps} >
+                            <TableRow>
+                                {this.renderHeader()}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody {...this.props.tableBodyProps}>
+                            {times(this.props.rowCount,function () {
+                            return (
+                            <CompositeRow
+                                key={index++}
+                                obs ={this.context.programObservable}
+                                rowData={this.state.selectedProgData}
+                                {...this.props}/>
+                            )
+                            }.bind(this))}
+                        </TableBody>
+                    </Table>
+                </div>
+                </div>
             </div>
         )
     }
 }
-
+// TODO add selectedProgData propTypes
 EditTable.propTypes = {
     style : React.PropTypes.object.isRequired,
     tableProps: React.PropTypes.object,

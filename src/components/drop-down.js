@@ -34,6 +34,21 @@ export default class HackyDropDown extends React.Component {
         return true;
     }
 
+    componentWillReceiveProps = (nextProps) => {
+        if(JSON.stringify(this.props.menuItems)!=JSON.stringify(nextProps.menuItems)) {
+            if(nextProps.menuItems.length>0){
+                this.setState({
+                    value: nextProps.menuItems[0].id
+                })
+            } else {
+                this.setState({
+                    value: "null"
+                })
+            }
+        }
+
+    }
+
     handleChange = (event, index, value) => {
         this.setState({value});
         this.props.onChange({target: {value: value}});
@@ -43,7 +58,7 @@ export default class HackyDropDown extends React.Component {
         if (menuItems.length >0) {
             return menuItems.map(item => {
                 return (
-                    <MenuItem key={item.id} value={item.id} primaryText={item.displayName} />
+                    <MenuItem key={item.id} value={item.id} primaryText={item.displayName} disabled={!!item.disabled}/>
                 );
 
             });
@@ -57,12 +72,15 @@ export default class HackyDropDown extends React.Component {
         const {onChange, menuItems, ...other} = this.props;
         return (
             <div>
+                {this.state.value=="null"?
+                <progress></progress>:
                 <SelectField value={this.state.value}
                     onChange={this.handleChange.bind(this)}
                     style={styles.customize}
-                    autoWidth={true}>
+                    autoWidth={true}
+                    disabled={this.props.menuItems.length>1?false:true}>
                     {this.renderMenuItems(Array.isArray(this.props.menuItems) ? this.props.menuItems : this.props.menuItems.toArray())}
-                </SelectField>
+                </SelectField>}
             </div>
         );
     }

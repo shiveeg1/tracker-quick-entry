@@ -33,7 +33,6 @@ class App extends React.Component {
 
     componentWillMount() {
         this.programObservable = new Rx.Subject();
-        console.log(typeof(this.programObservable));
     }
 
 
@@ -47,6 +46,12 @@ class App extends React.Component {
 
     _handleOrgTreeClick(event, orgUnit) {
         // fecthing all programs under that org-unit
+        this.programObservable.onNext({selectedProg:"null",selectedOrg:this.state.selectedOrg});
+        this.setState({
+            selectedOrg: this.state.selectedOrg === orgUnit.id ? '' : orgUnit.id,
+            programList: [],
+        });
+
         let dropdownProgList = [];
         console.log(orgUnit.id);
         this.props.d2.models.organisationUnits.get(orgUnit.id,{paging:false,fields:'id,name,programs[*,id,name,programIndicators[*],dataEntryForm,attributeValues,enrollmentDateLabel,registration,useFirstStageDuringRegistration,programStages[id,name,programStageDataElements[id,dataElement[id,name,optionSet[id,name,version]]]],organisationUnits,programTrackedEntityAttributes,trackedEntity]'})
@@ -55,10 +60,10 @@ class App extends React.Component {
                 if(oneProgram.programTrackedEntityAttributes.valuesContainerMap.size > 0)
                     dropdownProgList.push({id:oneProgram.id,displayName:oneProgram.name});
             })
+            dropdownProgList.unshift({id:"placeholder",displayName:"Select Program",disabled:true});
             this.setState({
                 allOrgProgData: orgUnitData.programs,
                 programList: dropdownProgList,
-                selectedOrg: this.state.selectedOrg === orgUnit.id ? '' : orgUnit.id
             });
         })
         .catch(err => {
