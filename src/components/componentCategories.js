@@ -14,13 +14,19 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import ButtonWrapper from './button-wrapper';
 import FontIcon from 'material-ui/lib/font-icon';
 
+import { isRequired } from 'd2-ui/lib/forms/Validators';
 //App
 import HackyDropdown from './drop-down';
 
+var dateFormat = function formatDate(date) {
+    return (date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate())
+}
 
 //TODO The data types are : TEXT, DATE, NUMBER, EMAIL, PHONE NUMBER, BOOLEAN, BOOLEAN
-export default function getComponent(cell,id,hc) {
+export default function getComponent(cell,hc) {
     let component= {};
+
+
 
     const fieldBase = {
                     name: cell.id,
@@ -29,7 +35,7 @@ export default function getComponent(cell,id,hc) {
                         style: { width: '100%' },
                         defaultValue:'',
                         key: cell.id,
-                    },
+                    }
                 };
     switch (cell.type) {
         case 'DATE':
@@ -38,6 +44,7 @@ export default function getComponent(cell,id,hc) {
                         props: Object.assign({}, fieldBase.props, {
                             onChange: hc,
                             autoOk : true,
+                            formatDate: dateFormat,
                             textFieldStyle:{width:'100%'}
                         }),
                     });
@@ -47,7 +54,8 @@ export default function getComponent(cell,id,hc) {
                         component: TextField,
                         changeEvent: 'onBlur',
                         props: Object.assign({}, fieldBase.props, {
-                            onBlur: hc
+                            onBlur: hc,
+                            type:'number'
                         }),
                     });
             break;

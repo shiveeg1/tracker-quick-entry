@@ -1,8 +1,10 @@
 import React from 'react';
 import times from 'lodash.times';
+import log from 'loglevel';
 // material-ui
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/lib/table';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/lib/card';
+import Snackbar from 'material-ui/lib/snackbar';
 import FontIcon from 'material-ui/lib/font-icon';
 //App
 import ProgramStageDropDown from './drop-down';
@@ -10,6 +12,7 @@ import ComponentCategories from './componentCategories';
 //d2-ui
 import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
 import dhis2 from 'd2-ui/lib/header-bar/dhis2';
+import { isRequired } from 'd2-ui/lib/forms/Validators';
 /*
 TODO collapse option icon
 TODO change stageData state structure accordingly. Maybe array of objects
@@ -21,7 +24,7 @@ export default class CompositeRow extends React.Component {
     	let basicState = {
     	    animHeight:'0px',
     	    selectedStageIndex: 0,
-    	    stageData : []
+            incompleteForm : false
     	}
     	this.state = Object.assign({},{
     		rowValues: [],
@@ -34,7 +37,6 @@ export default class CompositeRow extends React.Component {
 
         this.d2 = context.d2;
     	this.props = props;
-    	this.stageDat = [];
     }
 
     componentWillReceiveProps() {
@@ -72,6 +74,7 @@ export default class CompositeRow extends React.Component {
         if(ifenroll) {
             this.context.d2.Api.getApi().post("enrollments",enrollObj)
             .then(response => {
+                console.log(response);
                 let enrollId= response.response.importSummaries[0].reference;
                 console.log("enrol id : "+enrollId);
                 this.setState({
@@ -81,7 +84,7 @@ export default class CompositeRow extends React.Component {
                 })
             })
             .catch(err => {
-                console.log('failed to enroll TEI instance '+err);
+                log.warn('Failed to enroll TEI instance:', err.message ? err.message : err);
                 this.setState({
                 	animHeight: this.state.animHeight=='0px'?'500px':'0px',
                 	status: <FontIcon className="material-icons">warning</FontIcon>,
@@ -89,36 +92,24 @@ export default class CompositeRow extends React.Component {
                 })
             });
         }
-        console.log("came to the end");
      }
 
-    registerTEI() {
-        let attributeList = [], registerPayload = {};
-        let size = this.props.rowData.headers.size;
-        this.props.rowData.headers.forEach((cell,index) => {
-            // TODO redo for a "mandatory" check
-            if(this.state.rowValues[index] === undefined && (index != (size-1))) {
-                return 500;
-            }
-            else {
-                attributeList.push({attribute: cell.id, value: this.state.rowValues[index]})
-            }
-        })
+    registerTEI(attributeList) {
+        let registerPayload = {};
         registerPayload["attributes"] = attributeList;
         registerPayload["trackedEntity"] = this.props.rowData.trackedEntityId;
         registerPayload["orgUnit"] = this.props.rowData.orgUnit;
         console.log(registerPayload);
-        let regFlag = true;
+        let regFlag = false;
         if(regFlag) {
             this.d2.Api.getApi().post("trackedEntityInstances",registerPayload)
             .then(response => {
                 console.log(response);
                 let instanceId = response.response.reference;
-                console.log("reg id : "+instanceId);
                 this.handleEnroll(instanceId);
             })
             .catch(err => {
-                console.log('failed to register TEI instance '+err);
+                log.warn('Failed to register TEI instance:', err.message ? err.message : err);
                 this.setState({
                 	animHeight: this.state.animHeight=='0px'?'500px':'0px',
                 	status: <FontIcon className="material-icons">warning</FontIcon>,
@@ -126,12 +117,43 @@ export default class CompositeRow extends React.Component {
                 })
             });
         }
-        console.log("came to the end");
+    }
+
+    handleRequestClose = () => {
+        this.setState({
+            incompleteForm: false,
+        });
     }
 
     _handleButtonClick() {
-        console.log(this.props.rowData);
-        this.registerTEI();
+        let storedVals = this.state.rowValues;
+        let currentStateValues = this.state.rowValues;
+        let attributeList = [];
+        let headerCells = this.props.rowData.headers;
+        let completeForm = true;
+        let size = this.props.rowData.headers.length-1;
+        let i = 0;
+        for(i=0; i < size; i++) {
+            let index = headerCells[i].id;
+            if(storedVals[index] != undefined && !!storedVals[index]) {
+                attributeList.push({attribute: index, value: storedVals[index]})
+            }
+            else {
+                if(headerCells[i].required) {
+                    currentStateValues[index] = "";
+                    completeForm = false;
+                }
+            }
+        }
+
+        if(i === (size) && completeForm) {
+            this.registerTEI(attributeList);
+        }
+        else {
+            this.setState({
+                rowValues: currentStateValues
+            })
+        }
     }
 
     _handleUpdateFeild() {
@@ -157,43 +179,37 @@ export default class CompositeRow extends React.Component {
         let type = cell.type;
         switch (type) {
         	case 'DATE':
-        			row[id] = info[1];
-        			this.stageDat=row;
+                    row[cell.id] = info[1];
         			this.setState({
         				rowValues:row
         			});
         		break;
         	case 'TEXT':
-        			row[id] = info[0].target.value;
-        			this.stageDat=row;
+                    row[cell.id] = info[0].target.value;
         			this.setState({
         				rowValues: row
         			});
         	break;
         	case 'NUMBER':
-        			row[id] = info[0].target.value;
-        			this.stageDat=row;
+                    row[cell.id] = info[0].target.value;
         			this.setState({
         				rowValues: row
         			});
         	break;
         	case 'BOOLEAN':
-        			row[id] = info[1].toString();
-        			this.stageDat=row;
+                    row[cell.id] = info[1].toString();
         			this.setState({
-        				stageData: row
+        				rowValues: row
         			});
         	break;
         	case 'optionSet':
-        			row[id] = cell.options[info[0].target.value-1].displayName;
-        			this.stageDat=row;
+                    row[cell.id] = cell.options[info[0].target.value-1].displayName;
         			this.setState({
         				rowValues: row
         			});
         	break;
         	default:
-        			row[id] = info[0].target.value;
-        			this.stageDat=row;
+                    row[cell.id] = info[0].target.value;
         			this.setState({
         				rowValues: row
         			});
@@ -221,9 +237,15 @@ export default class CompositeRow extends React.Component {
         const buttonColor = this.context.muiTheme.rawTheme.palette.primary1Color;
         let fieldList = this.props.rowData.headers.map((cell,id) => {
         handleChangeRef = function() {this._handleChange(id,cell,arguments)}.bind(this);
-        let component = ComponentCategories(cell,id,handleChangeRef);
+        let component = ComponentCategories(cell,handleChangeRef);
+        if(cell.required) {
+            component.validators= [{
+                    validator: isRequired,
+                    message: this.context.d2.i18n.getTranslation(isRequired.message),
+                }];
+        }
         let cellStyle= {};
-        component.value = this.state.rowValues[id];
+        component.value = this.state.rowValues[cell.id];
         if(component.displayName === 'button') {
         	cell.label = cell.label === 'null' ? this.props.label : cell.label
         	component.props.labelStyle = {color:this.context.muiTheme.rawTheme.palette.primary1Color};
