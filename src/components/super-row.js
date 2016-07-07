@@ -100,7 +100,7 @@ export default class CompositeRow extends React.Component {
         registerPayload["trackedEntity"] = this.props.rowData.trackedEntityId;
         registerPayload["orgUnit"] = this.props.rowData.orgUnit;
         console.log(registerPayload);
-        let regFlag = false;
+        let regFlag = true;
         if(regFlag) {
             this.d2.Api.getApi().post("trackedEntityInstances",registerPayload)
             .then(response => {
@@ -181,12 +181,16 @@ export default class CompositeRow extends React.Component {
         }
     }
 
+    formatDate(date){
+      return date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
+    }
+
     _handleChange = (id,cell,info) => {
         let row = this.state.rowValues;
         let type = cell.type;
         switch (type) {
         	case 'DATE':
-                    row[cell.id] = info[1];
+                    row[cell.id] = this.formatDate(info[1]);
         			this.setState({
         				rowValues:row
         			});
@@ -253,7 +257,10 @@ export default class CompositeRow extends React.Component {
                 }];
         }
         let cellStyle= {};
-        component.value = this.state.rowValues[cell.id];
+        if(cell.type=="DATE" && this.state.rowValues[cell.id]!=undefined){
+                component.value = new Date(this.state.rowValues[cell.id]);
+        } else
+                component.value = this.state.rowValues[cell.id];
         if(component.displayName === 'button') {
         	cell.label = cell.label === 'null' ? this.props.label : cell.label
         	component.props.labelStyle = {color:this.context.muiTheme.rawTheme.palette.primary1Color};
