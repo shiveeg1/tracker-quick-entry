@@ -126,6 +126,7 @@ export default class CompositeRow extends React.Component {
     }
 
     _handleButtonClick() {
+        console.log("in button click");
         let storedVals = this.state.rowValues;
         let currentStateValues = this.state.rowValues;
         let attributeList = [];
@@ -136,9 +137,11 @@ export default class CompositeRow extends React.Component {
         for(i=0; i < size; i++) {
             let index = headerCells[i].id;
             if(storedVals[index] != undefined && !!storedVals[index]) {
+                console.log("inside IF");
                 attributeList.push({attribute: index, value: storedVals[index]})
             }
             else {
+                console.log("inside else");
                 if(headerCells[i].required) {
                     currentStateValues[index] = "";
                     completeForm = false;
@@ -147,9 +150,13 @@ export default class CompositeRow extends React.Component {
         }
 
         if(i === (size) && completeForm) {
+            console.log("registering");
+            console.log(attributeList);
             this.registerTEI(attributeList);
         }
         else {
+            console.log("setting state");
+            console.log(currentStateValues);
             this.setState({
                 rowValues: currentStateValues
             })
@@ -222,7 +229,8 @@ export default class CompositeRow extends React.Component {
                 position:"static",
                 display:"inline-block",
                 padding:0,
-                backgroundColor:'aliceBlue'
+                backgroundColor:'aliceBlue',
+                maxHeight:55,
             },
             wrapperStyle: {
                 position:"static",

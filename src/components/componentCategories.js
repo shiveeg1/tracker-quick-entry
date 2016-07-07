@@ -32,9 +32,10 @@ export default function getComponent(cell,hc) {
                     name: cell.id,
                     component: TextField,
                     props: {
-                        style: { width: '100%' },
+                        style: { width: '100%',height:50,marginTop:-40},
                         defaultValue:'',
                         key: cell.id,
+                        errorStyle: {position:'absolute',top:-2,height:0,paddingBottom:5},
                     }
                 };
     switch (cell.type) {
