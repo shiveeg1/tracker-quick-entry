@@ -40,8 +40,16 @@ export default class CompositeRow extends React.Component {
     }
 
     componentWillReceiveProps() {
-	    this.setState({
-		    rowValues:[]
+        this.setState({
+		    rowValues:[],
+            animHeight:"0px",
+            focusFlag:false,
+            status: <FontIcon
+                className="material-icons"
+                color={this.context.muiTheme.rawTheme.palette.primary1Color}>mode_edit
+                </FontIcon>,
+    		statusColor: this.context.muiTheme.rawTheme.palette.primary1Color,
+            successFlag: false,
 	    })
       }
 
@@ -74,7 +82,6 @@ export default class CompositeRow extends React.Component {
         if(ifenroll) {
             this.context.d2.Api.getApi().post("enrollments",enrollObj)
             .then(response => {
-                console.log(response);
                 let enrollId= response.response.importSummaries[0].reference;
                 console.log("enrol id : "+enrollId);
                 this.setState({
@@ -99,7 +106,6 @@ export default class CompositeRow extends React.Component {
         registerPayload["attributes"] = attributeList;
         registerPayload["trackedEntity"] = this.props.rowData.trackedEntityId;
         registerPayload["orgUnit"] = this.props.rowData.orgUnit;
-        console.log(registerPayload);
         let regFlag = true;
         if(regFlag) {
             this.d2.Api.getApi().post("trackedEntityInstances",registerPayload)
@@ -257,7 +263,7 @@ export default class CompositeRow extends React.Component {
                 }];
         }
         let cellStyle= {};
-        if(cell.type=="DATE" && this.state.rowValues[cell.id]!=undefined){
+        if(cell.type=="DATE" && this.state.rowValues[cell.id]!=undefined && this.state.rowValues[cell.id]!=''){
                 component.value = new Date(this.state.rowValues[cell.id]);
         } else
                 component.value = this.state.rowValues[cell.id];
