@@ -20,36 +20,21 @@ TODO change stageData state structure accordingly. Maybe array of objects
 export default class CompositeRow extends React.Component {
     constructor(props,context){
     	super(props,context);
-    	this.context=context;
-    	let basicState = {
-    	    animHeight:'0px',
-    	    selectedStageIndex: 0,
-            incompleteForm : false
-    	}
-    	this.state = Object.assign({},{
-    		rowValues: [],
-    		status: <FontIcon
-                className="material-icons"
-                color={this.context.muiTheme.rawTheme.palette.primary1Color}>mode_edit
-                </FontIcon>,
-    		statusColor: this.context.muiTheme.rawTheme.palette.primary1Color,
-    	},basicState);
 
+    	this.state = {
+    		rowValues: [],
+            selectedStageIndex: 0,
+            saved: null
+    	};
         this.d2 = context.d2;
     	this.props = props;
+        this.context=context;
     }
 
     componentWillReceiveProps() {
         this.setState({
 		    rowValues:[],
-            animHeight:"0px",
-            focusFlag:false,
-            status: <FontIcon
-                className="material-icons"
-                color={this.context.muiTheme.rawTheme.palette.primary1Color}>mode_edit
-                </FontIcon>,
-    		statusColor: this.context.muiTheme.rawTheme.palette.primary1Color,
-            successFlag: false,
+            saved: null,
 	    })
       }
 
@@ -85,17 +70,13 @@ export default class CompositeRow extends React.Component {
                 let enrollId= response.response.importSummaries[0].reference;
                 console.log("enrol id : "+enrollId);
                 this.setState({
-                	animHeight: this.state.animHeight=='0px'?'500px':'0px',
-                	status: <FontIcon className="material-icons">done</FontIcon>,
-                	statusColor: this.context.muiTheme.rawTheme.palette.successColor
+                    saved: true,
                 })
             })
             .catch(err => {
                 log.warn('Failed to enroll TEI instance:', err.message ? err.message : err);
                 this.setState({
-                	animHeight: this.state.animHeight=='0px'?'500px':'0px',
-                	status: <FontIcon className="material-icons">warning</FontIcon>,
-                	statusColor: this.context.muiTheme.rawTheme.palette.warningColor
+                    saved: false,
                 })
             });
         }
@@ -110,29 +91,19 @@ export default class CompositeRow extends React.Component {
         if(regFlag) {
             this.d2.Api.getApi().post("trackedEntityInstances",registerPayload)
             .then(response => {
-                console.log(response);
                 let instanceId = response.response.reference;
                 this.handleEnroll(instanceId);
             })
             .catch(err => {
                 log.warn('Failed to register TEI instance:', err.message ? err.message : err);
                 this.setState({
-                	animHeight: this.state.animHeight=='0px'?'500px':'0px',
-                	status: <FontIcon className="material-icons">warning</FontIcon>,
-                	statusColor: this.context.muiTheme.rawTheme.palette.warningColor
+                    saved: false,
                 })
             });
         }
     }
 
-    handleRequestClose = () => {
-        this.setState({
-            incompleteForm: false,
-        });
-    }
-
     _handleButtonClick() {
-        console.log("in button click");
         let storedVals = this.state.rowValues;
         let currentStateValues = this.state.rowValues;
         let attributeList = [];
@@ -143,11 +114,9 @@ export default class CompositeRow extends React.Component {
         for(i=0; i < size; i++) {
             let index = headerCells[i].id;
             if(storedVals[index] != undefined && !!storedVals[index]) {
-                console.log("inside IF");
                 attributeList.push({attribute: index, value: storedVals[index]})
             }
             else {
-                console.log("inside else");
                 if(headerCells[i].required) {
                     currentStateValues[index] = "";
                     completeForm = false;
@@ -156,13 +125,9 @@ export default class CompositeRow extends React.Component {
         }
 
         if(i === (size) && completeForm) {
-            console.log("registering");
-            console.log(attributeList);
             this.registerTEI(attributeList);
         }
         else {
-            console.log("setting state");
-            console.log(currentStateValues);
             this.setState({
                 rowValues: currentStateValues
             })
@@ -172,19 +137,6 @@ export default class CompositeRow extends React.Component {
     _handleUpdateFeild() {
         // TODO validate required feilds and save on server
         console.log("feild updated");
-    }
-
-    toggleHeight() {
-        if(this.state.animHeight === '0px') {
-        	this.setState({
-        		animHeight: '500px'
-        	})
-        }
-        else {
-        	this.setState({
-        		animHeight: '0px'
-        	})
-        }
     }
 
     formatDate(date){
@@ -233,6 +185,36 @@ export default class CompositeRow extends React.Component {
         }
     }
 
+    getIconStyle = () => {
+        if(this.state.saved) {
+            return {color :this.context.muiTheme.rawTheme.palette.successColor}
+        }
+        else if(this.state.saved === false) {
+            return {color :this.context.muiTheme.rawTheme.palette.warningColor}
+        }
+        else {
+            return {color :this.context.muiTheme.rawTheme.palette.primary1Color}
+        }
+    }
+
+    getIcon = ()=> {
+        if(this.state.saved) {
+            return <FontIcon className="material-icons">done</FontIcon>
+        }
+        else if(this.state.saved === false) {
+            return <FontIcon className="material-icons">warning</FontIcon>
+        }
+        else {
+            return (
+                <FontIcon
+                    className="material-icons"
+                    color={this.context.muiTheme.rawTheme.palette.primary1Color}>mode_edit
+                </FontIcon>
+            )
+
+        }
+    }
+
     renderRow() {
         const style = {
             rowStyle: {
@@ -251,8 +233,8 @@ export default class CompositeRow extends React.Component {
                 minHeight:36,
             }
         }
+
         let handleChangeRef = null;
-        const buttonColor = this.context.muiTheme.rawTheme.palette.primary1Color;
         let fieldList = this.props.rowData.headers.map((cell,id) => {
         handleChangeRef = function() {this._handleChange(id,cell,arguments)}.bind(this);
         let component = ComponentCategories(cell,handleChangeRef);
@@ -272,8 +254,8 @@ export default class CompositeRow extends React.Component {
         	component.props.labelStyle = {color:this.context.muiTheme.rawTheme.palette.primary1Color};
         	component.props.onClick=this._handleButtonClick.bind(this);
         	component.props.label=cell.label;
-        	component.props.style = {color:this.state.statusColor}
-        	component.props.icon = this.state.status;
+        	component.props.style = this.getIconStyle.call();
+            component.props.icon = this.getIcon.call();
         	cellStyle= cell.cellStyle;
         }
         else if (component.displayName ==='icon') {
@@ -294,15 +276,15 @@ export default class CompositeRow extends React.Component {
 	const styles = {
         noPad : {
     		padding:'0px',
-    		borderTop:this.state.animHeight=='0px'?'solid 0px #bdbdbd':'solid 1px #bdbdbd',
-    		maxHeight:this.state.animHeight,
+            borderTop:this.state.saved ? 'solid 1px #bdbdbd' : 'solid 0px #bdbdbd',
+    		maxHeight:this.state.saved ? '500px' : '0px',
     		transition:'all 1s ease'
         },
 	    cardStyle : {
             paddingTop:"0px",
             paddingBottom:"0px",
-            borderTop:this.state.animHeight=='0px'?'solid 0px #bdbdbd':'solid 1px #bdbdbd',
-    		maxHeight:this.state.animHeight,
+            borderTop:this.state.saved ? 'solid 1px #bdbdbd' : 'solid 0px #bdbdbd',
+    		maxHeight:this.state.saved ? '500px' : '0px',
     		transition:'all 1s ease'
         }
 	}
