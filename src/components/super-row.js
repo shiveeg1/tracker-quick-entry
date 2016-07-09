@@ -24,7 +24,8 @@ export default class CompositeRow extends React.Component {
     	this.state = {
     		rowValues: [],
             selectedStageIndex: 0,
-            saved: null
+            saved: null,
+            fabClicked: false
     	};
         this.d2 = context.d2;
     	this.props = props;
@@ -35,6 +36,7 @@ export default class CompositeRow extends React.Component {
         this.setState({
 		    rowValues:[],
             saved: null,
+            fabClicked: false
 	    })
       }
 
@@ -215,6 +217,13 @@ export default class CompositeRow extends React.Component {
         }
     }
 
+    toggleCard() {
+        console.log("open card");
+        this.setState({
+            fabClicked: !this.state.fabClicked
+        })
+    }
+
     renderRow() {
         const style = {
             rowStyle: {
@@ -246,10 +255,12 @@ export default class CompositeRow extends React.Component {
                 }];
         }
         let cellStyle= {};
+
         if(cell.type=="DATE" && this.state.rowValues[cell.id]!=undefined && this.state.rowValues[cell.id]!=''){
                 component.value = new Date(this.state.rowValues[cell.id]);
         } else
                 component.value = this.state.rowValues[cell.id];
+
         if(component.displayName === 'button') {
         	cell.label = cell.label === 'null' ? this.props.label : cell.label
         	component.props.labelStyle = {color:this.context.muiTheme.rawTheme.palette.primary1Color};
@@ -258,6 +269,7 @@ export default class CompositeRow extends React.Component {
         	component.props.style = this.getIconStyle.call();
             component.props.icon = this.getIcon.call();
             component.props.status = this.state.saved;
+            component.props.toggleCard = function() {this.toggleCard()}.bind(this);
         	cellStyle= cell.cellStyle;
         }
         else if (component.displayName ==='icon') {
@@ -265,6 +277,7 @@ export default class CompositeRow extends React.Component {
         }
         return component;
         })
+
         return (
           <FormBuilder
               key={this.props.rowData.programId+"row"}
@@ -285,8 +298,8 @@ export default class CompositeRow extends React.Component {
 	    cardStyle : {
             paddingTop:"0px",
             paddingBottom:"0px",
-            borderTop:this.state.saved ? 'solid 1px #bdbdbd' : 'solid 0px #bdbdbd',
-    		maxHeight:this.state.saved ? '500px' : '0px',
+            borderTop:this.state.fabClicked ? 'solid 1px #bdbdbd' : 'solid 0px #bdbdbd',
+    		maxHeight:this.state.fabClicked ? '500px' : '0px',
     		transition:'all 1s ease'
         }
 	}

@@ -122,7 +122,6 @@ class App extends React.Component {
             table: {
                 marginLeft: '10px',
                 marginTop: '20px',
-                marginRight: '200px',
                 border: '1px solid',
                 borderColor: AppTheme.rawTheme.palette.borderColor,
                 overflow:'visible',

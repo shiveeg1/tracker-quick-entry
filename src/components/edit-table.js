@@ -95,10 +95,9 @@ export default class EditTable extends React.Component {
                     required:true,
                     cellStyle:{
                         position:'absolute',
-                        right:-201,
+                        right:0,
                         width:152,
                         backgroundColor:'white',
-                        borderRight:'solid 1px #bdbdbd',
                         borderTop:'solid 1px #bdbdbd',
                         borderLeft:'solid 1px #bdbdbd',
                         zIndex:1,
@@ -171,7 +170,7 @@ export default class EditTable extends React.Component {
         const styles = {
             bodyStyles: {
                 overflowX:'visible',
-                width: (this.state.selectedProgData.headers.length-1)*200
+                width: this.state.selectedProgData.headers.length*200
             },
             scrollWrapperStyle: {
                 overflowX:"auto",
@@ -179,10 +178,9 @@ export default class EditTable extends React.Component {
                 height:"20px",
                 marginBottom:"-20px",
                 marginLeft:"10px",
-                marginRight:"200px"
             },
             scrollDivStyle: {
-                width: (this.state.selectedProgData.headers.length-1)*200,
+                width: this.state.selectedProgData.headers.length*200,
                 display:"block",
                 height:"20px"
             }
@@ -197,7 +195,7 @@ export default class EditTable extends React.Component {
                 </div>
                 <div style={this.props.style}>
                 <div className="scroll-basic" onScroll={this._topScroll.bind(this)}>
-                    <Table {...this.props.tableProps} bodyStyle={styles.bodyStyles} style={{width:(this.state.selectedProgData.headers.length-1)*200}}>
+                    <Table {...this.props.tableProps} bodyStyle={styles.bodyStyles} style={{width:this.state.selectedProgData.headers.length*200}}>
                         <TableHeader {...this.props.tableHeaderProps} >
                             <TableRow>
                                 {this.renderHeader()}
