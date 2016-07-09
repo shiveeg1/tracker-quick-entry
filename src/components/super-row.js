@@ -223,13 +223,14 @@ export default class CompositeRow extends React.Component {
                 padding:0,
                 backgroundColor:'aliceBlue',
                 maxHeight:55,
+                width:'100%'
             },
             wrapperStyle: {
                 position:"static",
                 display:"inline-block",
-                paddingLeft:24,
-                paddingRight:24,
-                width:152,
+                paddingLeft:"styles.field.paddingLeft",
+                paddingRight:"styles.field.paddingRight",
+                width:"styles.field.width",
                 minHeight:36,
             }
         }
@@ -256,6 +257,7 @@ export default class CompositeRow extends React.Component {
         	component.props.label=cell.label;
         	component.props.style = this.getIconStyle.call();
             component.props.icon = this.getIcon.call();
+            component.props.status = this.state.saved;
         	cellStyle= cell.cellStyle;
         }
         else if (component.displayName ==='icon') {

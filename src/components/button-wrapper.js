@@ -1,28 +1,40 @@
 import React from 'react';
 import FlatButton from 'material-ui/lib/flat-button';
 
-const wrapperStyle = {
-    backgroundColor:'white',
-    zIndex:'10',
-    textAlign:'center',
-    position:'absolute',
-    right:0,
-    paddingRight:24,
-    paddingLeft:24,
-    paddingTop:9,
-    paddingBottom:9,
-    height:36,
-    width:152,
-    marginTop:-1,
-    borderLeft:'solid 1px #bdbdbd',
-    borderTop:'solid 1px #bdbdbd'
-};
+export default class ButtonWrapper extends React.Component {
+    constructor(props,context) {
+        super(props,context);
+        this.props = props;
+        this.context = context;
+    }
 
-const ButtonWrapper = (props) => (
-    <div style={wrapperStyle}>
-        <FlatButton label={props.label} labelStyle={props.labelStyle} onClick={props.onClick} icon={props.icon} style={props.style}/>
-    </div>
-);
+    render() {
+        const wrapperStyle = {
+            backgroundColor:'white',
+            zIndex:'10',
+            textAlign:'center',
+            position:'absolute',
+            right:0,
+            paddingRight:24,
+            paddingLeft:24,
+            paddingTop:9,
+            paddingBottom:10,
+            height:36,
+            width:152,
+            right:-201,
+            marginTop:-1,
+            border:'solid 1px #bdbdbd',
+        };
+
+        return (
+            <div style={wrapperStyle}>
+                <FlatButton label={this.props.label} labelStyle={this.props.labelStyle} onClick={this.props.onClick} icon={this.props.icon} style={this.props.style}/>
+            </div>
+        )
+    }
+}
+
+
 
 ButtonWrapper.defaultProps = {label:"PLACEHOLDER"};
 
@@ -33,5 +45,3 @@ ButtonWrapper.propTypes = {
     style : React.PropTypes.object
 
 }
-
-export default ButtonWrapper;

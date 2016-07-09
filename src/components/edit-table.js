@@ -95,12 +95,15 @@ export default class EditTable extends React.Component {
                     required:true,
                     cellStyle:{
                         position:'absolute',
-                        right:'0',
+                        right:-201,
                         width:152,
                         backgroundColor:'white',
+                        borderRight:'solid 1px #bdbdbd',
+                        borderTop:'solid 1px #bdbdbd',
                         borderLeft:'solid 1px #bdbdbd',
                         zIndex:1,
                         paddingTop:0,
+                        marginTop:-1,
                         textAlign:'center',
                         paddingLeft:24,
                         paddingRight:24,
@@ -168,17 +171,18 @@ export default class EditTable extends React.Component {
         const styles = {
             bodyStyles: {
                 overflowX:'visible',
-                width: this.state.selectedProgData.headers.length*200
+                width: (this.state.selectedProgData.headers.length-1)*200
             },
             scrollWrapperStyle: {
                 overflowX:"auto",
                 overflowY:"hidden",
                 height:"20px",
                 marginBottom:"-20px",
-                marginLeft:"10px"
+                marginLeft:"10px",
+                marginRight:"200px"
             },
             scrollDivStyle: {
-                width:this.state.selectedProgData.headers.length*200,
+                width: (this.state.selectedProgData.headers.length-1)*200,
                 display:"block",
                 height:"20px"
             }
@@ -193,7 +197,7 @@ export default class EditTable extends React.Component {
                 </div>
                 <div style={this.props.style}>
                 <div className="scroll-basic" onScroll={this._topScroll.bind(this)}>
-                    <Table {...this.props.tableProps} bodyStyle={styles.bodyStyles} style={{width:this.state.selectedProgData.headers.length*200}}>
+                    <Table {...this.props.tableProps} bodyStyle={styles.bodyStyles} style={{width:(this.state.selectedProgData.headers.length-1)*200}}>
                         <TableHeader {...this.props.tableHeaderProps} >
                             <TableRow>
                                 {this.renderHeader()}

@@ -22,20 +22,35 @@ var dateFormat = function formatDate(date) {
     return (date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate())
 }
 
+var tabController = function(e){
+    if((e.nativeEvent.target.getBoundingClientRect().right+200)>document.documentElement.clientWidth){
+        document.getElementsByClassName('scroll-basic')[0].firstChild.scrollLeft+=200;
+    }
+}
+
 //TODO The data types are : TEXT, DATE, NUMBER, EMAIL, PHONE NUMBER, BOOLEAN, BOOLEAN
 export default function getComponent(cell,hc) {
     let component= {};
-
-
-
     const fieldBase = {
                     name: cell.id,
                     component: TextField,
                     props: {
-                        style: { width: '100%',height:50,marginTop:-40},
+                        style: {
+                            width: '152',
+                            marginRight:24,
+                            marginLeft:24,
+                            height:50,
+                            marginTop:-40
+                        },
                         defaultValue:'',
                         key: cell.id,
-                        errorStyle: {position:'absolute',top:-2,height:0,paddingBottom:5},
+                        errorStyle: {
+                            position:'absolute',
+                            top:-2,
+                            height:0,
+                            paddingBottom:5
+                        },
+                        onFocus: tabController,
                     }
                 };
     switch (cell.type) {
@@ -78,7 +93,8 @@ export default function getComponent(cell,hc) {
                             onChange: hc,
                             menuItems: cell.options,
                             includeEmpty: true,
-                            emptyLabel: 'Select Program'
+                            emptyLabel: 'Select Program',
+                            style:{width:200}
                         }),
                     });
             break;
@@ -103,6 +119,7 @@ export default function getComponent(cell,hc) {
                         props : {
                             primary: true,
                             validating:false,
+                            style:{width:0,paddingLeft:0,paddingRight:0}
                         }
                     });
             break;

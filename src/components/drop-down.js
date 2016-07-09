@@ -76,7 +76,7 @@ export default class HackyDropDown extends React.Component {
                 <progress></progress>:
                 <SelectField value={this.state.value}
                     onChange={this.handleChange.bind(this)}
-                    style={styles.customize}
+                    style={Object.assign({},styles.customize,this.props.style)}
                     autoWidth={true}
                     disabled={this.props.menuItems.length>1?false:true}>
                     {this.renderMenuItems(Array.isArray(this.props.menuItems) ? this.props.menuItems : this.props.menuItems.toArray())}
