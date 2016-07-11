@@ -9,7 +9,7 @@ export default class ButtonWrapper extends React.Component {
         this.props = props;
         this.context = context;
         this.state = {
-            rotate: null
+            rotate: false
         }
     }
 

@@ -9,6 +9,7 @@ import FontIcon from 'material-ui/lib/font-icon';
 //App
 import ProgramStageDropDown from './drop-down';
 import ComponentCategories from './componentCategories';
+import StageTabs from './stage-tabs';
 //d2-ui
 import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
 import dhis2 from 'd2-ui/lib/header-bar/dhis2';
@@ -23,7 +24,6 @@ export default class CompositeRow extends React.Component {
 
     	this.state = {
     		rowValues: [],
-            selectedStageIndex: 0,
             saved: null,
             fabClicked: false
     	};
@@ -39,12 +39,6 @@ export default class CompositeRow extends React.Component {
             fabClicked: false
 	    })
       }
-
-    _handleStageSelect(obj) {
-        this.setState({
-        	selectedStageIndex: obj.target.value
-        });
-    }
 
     getTodayDate() {
         let today = new Date();
@@ -102,6 +96,9 @@ export default class CompositeRow extends React.Component {
                     saved: false,
                 })
             });
+            this.setState({
+                saved: true,
+            })
         }
     }
 
@@ -137,7 +134,6 @@ export default class CompositeRow extends React.Component {
     }
 
     _handleUpdateFeild() {
-        // TODO validate required feilds and save on server
         console.log("feild updated");
     }
 
@@ -314,11 +310,7 @@ export default class CompositeRow extends React.Component {
             			{this.renderRow()}
             			</CardText>
                         <CardText style={styles.cardStyle}>
-                            <ProgramStageDropDown value="dropValue"
-                                onChange={this._handleStageSelect.bind(this)}
-                                menuItems={this.props.rowData.programStages}
-                                includeEmpty={true}
-                                emptyLabel="Select Stage"   />
+                            <StageTabs stages={this.props.rowData.programStages} />
             			</CardText>
             		</div>
         		</Card>

@@ -116,7 +116,10 @@ export default class EditTable extends React.Component {
                 programData.programStages = programStages;
                 this.setState({selectedProgData:programData})
             }
-        })}.bind(this));
+        })}.bind(this))
+        .catch(err => {
+            log.error('Failed to load selected Program data ',err);
+        });
         } else {
             this.setState({
                 selectedProgData : {
