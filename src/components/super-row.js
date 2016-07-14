@@ -85,17 +85,17 @@ export default class CompositeRow extends React.Component {
         registerPayload["orgUnit"] = this.props.rowData.orgUnit;
         let regFlag = true;
         if(regFlag) {
-            // this.d2.Api.getApi().post("trackedEntityInstances",registerPayload)
-            // .then(response => {
-            //     let instanceId = response.response.reference;
-            //     this.handleEnroll(instanceId);
-            // })
-            // .catch(err => {
-            //     log.warn('Failed to register TEI instance:', err.message ? err.message : err);
-            //     this.setState({
-            //         saved: false,
-            //     })
-            // });
+            this.d2.Api.getApi().post("trackedEntityInstances",registerPayload)
+            .then(response => {
+                let instanceId = response.response.reference;
+                this.handleEnroll(instanceId);
+            })
+            .catch(err => {
+                log.warn('Failed to register TEI instance:', err.message ? err.message : err);
+                this.setState({
+                    saved: false,
+                })
+            });
             this.setState({
                 saved: true,
             })
@@ -214,7 +214,6 @@ export default class CompositeRow extends React.Component {
     }
 
     toggleCard() {
-        console.log("open card");
         this.setState({
             fabClicked: !this.state.fabClicked
         })

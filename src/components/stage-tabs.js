@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDom from 'react-dom';
 import times from 'lodash.times';
 import log from 'loglevel';
 
@@ -48,9 +49,9 @@ export default class StageTabs extends React.Component {
                 component.props.label = cell.name;
                 component.props.style.marginBottom = '2px';
             }
+
             return component;
         });
-        console.log(fieldList);
         this.fields = fieldList;
         this.setState({
             open: true
@@ -121,18 +122,6 @@ export default class StageTabs extends React.Component {
             />,
         ];
 
-        const radios = [];
-        for (let i = 0; i < 30; i++) {
-            radios.push(
-            <RadioButton
-              key={i}
-              value={`value${i + 1}`}
-              label={`Option ${i + 1}`}
-              style={styles.radioButton}
-            />
-            );
-        }
-
         let index=0;
         return (
             <div>
@@ -144,7 +133,7 @@ export default class StageTabs extends React.Component {
                 }.bind(this))}
 
                 <Dialog
-                  title="Scrollable Dialog"
+                  title="Data Entry"
                   actions={actions}
                   modal={false}
                   open={this.state.open}

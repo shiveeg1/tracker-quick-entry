@@ -11,12 +11,14 @@ import Create from 'material-ui/lib/svg-icons/content/create';
 import Error from 'material-ui/lib/svg-icons/alert/error';
 import IconButton from 'material-ui/lib/icon-button';
 import RaisedButton from 'material-ui/lib/raised-button';
+import FlatButton from 'material-ui/lib/flat-button';
 import ButtonWrapper from './button-wrapper';
 import FontIcon from 'material-ui/lib/font-icon';
 
 import { isRequired } from 'd2-ui/lib/forms/Validators';
 //App
 import HackyDropdown from './drop-down';
+import FileUpload from './file-upload';
 
 var dateFormat = function formatDate(date) {
     return (date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate())
@@ -123,7 +125,16 @@ export default function getComponent(cell,hc) {
                         }
                     });
             break;
-
+        case 'FILE_RESOURCE':
+            component = Object.assign({}, fieldBase, {
+                    displayName: 'fileResource',
+                    component: FileUpload,
+                    props : {
+                        label: 'upload '+cell.name,
+                        onChange: hc
+                    }
+                });
+            break;
         default:
             component = Object.assign({}, fieldBase, {
                         component: TextField,
