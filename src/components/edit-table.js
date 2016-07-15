@@ -112,7 +112,6 @@ export default class EditTable extends React.Component {
                 programData.trackedEntityId=output.trackedEntity.id;
                 programData.orgUnit = subscriptionObj.selectedOrg;
                 programData.headers = attributeRow;
-                programStages.unshift({id:'placeholder',displayName:'Select Program Stage',disabled:true})
                 programData.programStages = programStages;
                 this.setState({selectedProgData:programData})
             }

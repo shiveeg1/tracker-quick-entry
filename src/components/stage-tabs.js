@@ -129,24 +129,16 @@ export default class StageTabs extends React.Component {
             />,
         ];
 
-        let index=0;
         return (
             <div>
-                {times(this.props.stages.length-1,function () {
-                    index++;
-                    return (
-                        <RaisedButton key={this.props.stages[index].id} label={this.props.stages[index].displayName} style={styles.stageButtons} onTouchTap={this.handleOpen.bind(this,this.props.stages[index].id)} />
-                    )
-                }.bind(this))}
-
+                <RaisedButton key={this.props.stage.id} label={this.props.stage.displayName} style={styles.stageButtons} onTouchTap={this.handleOpen.bind(this,this.props.stage.id)} />
                 <Dialog
                   title="Data Entry"
                   actions={actions}
                   modal={false}
                   open={this.state.open}
                   onRequestClose={this.handleClose}
-                  autoScrollBodyContent={true}
-                >
+                  autoScrollBodyContent={true} >
                     <FormBuilder
                         fields={this.fields}
                         onUpdateField={this.handleUpdateFeild} />

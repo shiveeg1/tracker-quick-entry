@@ -296,10 +296,13 @@ export default class CompositeRow extends React.Component {
             borderTop:this.state.fabClicked ? 'solid 1px #bdbdbd' : 'solid 0px #bdbdbd',
     		maxHeight:this.state.fabClicked ? '500px' : '0px',
             visibility: this.state.fabClicked ? 'visible' : 'hidden',
-    		transition:'all 1s ease'
+    		transition:'all 1s ease',
+            display: 'flex'
         }
 	}
 
+    let arrLen = this.props.rowData.programStages.length;
+    let index=-1;
 	return (
 //Single outer-row start
     	<TableRow >
@@ -310,7 +313,12 @@ export default class CompositeRow extends React.Component {
             			{this.renderRow()}
             			</CardText>
                         <CardText style={styles.cardStyle}>
-                            <StageTabs stages={this.props.rowData.programStages} />
+                            {times(arrLen,function () {
+                                index++;
+                                return (
+                                    <StageTabs key={this.props.rowData.programStages[index].id} stage={this.props.rowData.programStages[index]} />
+                                )
+                            }.bind(this))}
             			</CardText>
             		</div>
         		</Card>
