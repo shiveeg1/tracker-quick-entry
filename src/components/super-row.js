@@ -325,7 +325,7 @@ export default class CompositeRow extends React.Component {
                                         key={this.props.rowData.programStages[index].id}
                                         stage={this.props.rowData.programStages[index]}
                                         programId={this.props.rowData.programId}
-                                        orgId={this.props.rowData.orgUnit}
+                                        orgUnit={this.props.rowData.orgUnit}
                                         enrollId= {this.enrollId}
                                         teiId= {this.instanceId} />
                                 )
