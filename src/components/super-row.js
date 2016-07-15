@@ -295,6 +295,7 @@ export default class CompositeRow extends React.Component {
             paddingBottom:"0px",
             borderTop:this.state.fabClicked ? 'solid 1px #bdbdbd' : 'solid 0px #bdbdbd',
     		maxHeight:this.state.fabClicked ? '500px' : '0px',
+            visibility: this.state.fabClicked ? 'visible' : 'hidden',
     		transition:'all 1s ease'
         }
 	}

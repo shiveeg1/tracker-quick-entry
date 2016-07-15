@@ -30,6 +30,13 @@ export default class StageTabs extends React.Component {
         console.log(cell);
     }
 
+    componentWillReceiveProps() {
+        this.fields = [];
+        this.setState({
+            open: false
+        })
+    }
+
     getComponentFields(elementArr) {
         const styles = {
             componentStyles : {
