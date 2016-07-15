@@ -30,6 +30,8 @@ export default class CompositeRow extends React.Component {
         this.d2 = context.d2;
     	this.props = props;
         this.context=context;
+        this.enrollId = '';
+        this.instanceId = '';
     }
 
     componentWillReceiveProps() {
@@ -65,6 +67,7 @@ export default class CompositeRow extends React.Component {
             .then(response => {
                 let enrollId= response.response.importSummaries[0].reference;
                 console.log("enrol id : "+enrollId);
+                this.enrollId = enrollId;
                 this.setState({
                     saved: true,
                 })
@@ -88,6 +91,7 @@ export default class CompositeRow extends React.Component {
             this.d2.Api.getApi().post("trackedEntityInstances",registerPayload)
             .then(response => {
                 let instanceId = response.response.reference;
+                this.instanceId = instanceId;
                 this.handleEnroll(instanceId);
             })
             .catch(err => {
@@ -312,14 +316,21 @@ export default class CompositeRow extends React.Component {
             			<CardText style={{padding:0}}>
             			{this.renderRow()}
             			</CardText>
+                        {this.state.saved &&
                         <CardText style={styles.cardStyle}>
                             {times(arrLen,function () {
                                 index++;
                                 return (
-                                    <StageTabs key={this.props.rowData.programStages[index].id} stage={this.props.rowData.programStages[index]} />
+                                    <StageTabs
+                                        key={this.props.rowData.programStages[index].id}
+                                        stage={this.props.rowData.programStages[index]}
+                                        programId={this.props.rowData.programId}
+                                        orgId={this.props.rowData.orgUnit}
+                                        enrollId= {this.enrollId}
+                                        teiId= {this.instanceId} />
                                 )
                             }.bind(this))}
-            			</CardText>
+            			</CardText> }
             		</div>
         		</Card>
         	</TableRowColumn>

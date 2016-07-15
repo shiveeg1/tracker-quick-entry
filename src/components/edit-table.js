@@ -51,7 +51,7 @@ export default class EditTable extends React.Component {
         let programStages = [];
         let index = 0;
         if(selectedProg!="null"){
-        this.context.d2.models.program.get(selectedProg,{paging:false,fields:'trackedEntity,programTrackedEntityAttributes[id,mandatory,valueType,trackedEntityAttribute[id,name,optionSet[id,name,options[id,name]]]],programStages[id,name]'}).then(function(output){
+        this.context.d2.models.program.get(selectedProg,{paging:false,fields:'trackedEntity,programTrackedEntityAttributes[id,mandatory,valueType,trackedEntityAttribute[id,name,optionSet[id,name,options[id,name]]]],programStages[id,name,minDaysFromStart,repeatable,reportDateToUse]'}).then(function(output){
         output.programStages.forEach(
             singleStage => {
                 let stageJSON = {};
