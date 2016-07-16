@@ -21,23 +21,67 @@ import ComponentCategories from './componentCategories';
 export default class StageTabs extends React.Component {
     constructor(props,context) {
         super(props,constructor);
-        this.fields = [];
+        this.elementsData = null;
         this.state = {
             open: false,
             eventCreated: false,
-            eventDate: null
+            eventDate: null,
+            dataEntryObj: {},
         }
     }
 
     handleChange = (id,cell,info) => {
-        console.log(cell);
+        let eventData = this.state.dataEntryObj;
+        if(!eventData[this.eventId]) {
+            eventData[this.eventId] = {};
+        }
+        let type = cell.type;
+        switch (type) {
+        	case 'DATE':
+                    eventData[this.eventId][cell.id] = this.formatDate(info[1]);
+        			this.setState({
+        				dataEntryObj:eventData
+        			});
+        		break;
+        	case 'TEXT':
+                    eventData[this.eventId][cell.id] = info[0].target.value;
+        			this.setState({
+        				dataEntryObj: eventData
+        			});
+        	break;
+        	case 'NUMBER':
+                    eventData[this.eventId][cell.id] = info[0].target.value;
+        			this.setState({
+        				dataEntryObj: eventData
+        			});
+        	break;
+        	case 'BOOLEAN':
+                    eventData[this.eventId][cell.id] = info[1].toString();
+        			this.setState({
+        				dataEntryObj: eventData
+        			});
+        	break;
+        	case 'optionSet':
+                    eventData[this.eventId][cell.id] = cell.options[info[0].target.value].displayName;
+        			this.setState({
+        				dataEntryObj: eventData
+        			});
+        	break;
+        	default:
+                    eventData[this.eventId][cell.id] = info[0].target.value;
+        			this.setState({
+        				dataEntryObj: eventData
+        			});
+        }
     }
 
     componentWillReceiveProps() {
-        this.fields = [];
-        this.setState({
-            open: false
-        })
+        this.state = {
+            open: false,
+            eventCreated: false,
+            eventDate: null,
+            dataEntryObj: {},
+        }
     }
 
     getComponentFields(elementArr) {
@@ -48,8 +92,9 @@ export default class StageTabs extends React.Component {
             }
         }
         let handleChangeRef = null;
-        let fieldList = elementArr.map(cell => {
-            handleChangeRef = function() {this.handleChange(cell,arguments)}.bind(this);
+
+        let fieldList = elementArr.map((cell,id) => {
+            handleChangeRef = function() {this.handleChange(id,cell,arguments)}.bind(this);
             let component = ComponentCategories(cell,handleChangeRef);
             component.props.style = styles.componentStyles;
             if(component.component.displayName === 'TextField' || component.component.displayName === 'HackyDropDown') {
@@ -60,12 +105,19 @@ export default class StageTabs extends React.Component {
                 component.props.style.marginBottom = '2px';
             }
 
+            if(cell.type=="DATE" && this.state.dataEntryObj[this.eventId]!=undefined && this.state.dataEntryObj[this.eventId][cell.id]!=''){
+                    component.value = new Date(this.state.dataEntryObj[this.eventId][cell.id]);
+            } else
+                    component.value = this.state.dataEntryObj[this.eventId] ?  this.state.dataEntryObj[this.eventId][cell.id] : undefined;
+
             return component;
         });
-        this.fields = fieldList;
-        this.setState({
-            open: true
-        })
+        return (
+            <FormBuilder
+                fields={fieldList}
+                onUpdateField={this.handleUpdateFeild} />
+        )
+
     }
 
     handleOpen = (stageId) => {
@@ -79,9 +131,9 @@ export default class StageTabs extends React.Component {
                 if(!!stageElements.dataElement.optionSet) {
                     obj.options = [];
                     obj.type="optionSet";
-                    stageElements.dataElement.optionSet.options.forEach(opt => {
+                    stageElements.dataElement.optionSet.options.forEach((opt,index) => {
                         let optionObj = {};
-                        optionObj.id = opt.id;
+                        optionObj.id = index+1;
                         optionObj.displayName = opt.name;
                         obj.options.push(optionObj);
                     })
@@ -92,7 +144,10 @@ export default class StageTabs extends React.Component {
                 }
                 elementsData.push(obj);
             });
-            this.getComponentFields(elementsData);
+            this.elementsData = elementsData;
+            this.setState({
+                open: true,
+            })
         })
         .catch(err => {
             log.error('Failed to load program stage data ',err);
@@ -112,7 +167,6 @@ export default class StageTabs extends React.Component {
     }
 
     createEvent() {
-        // TODO  format date
         // TODO how to choose status active / scheduled
         let eventList = [];
         let eventObj = {};
@@ -129,7 +183,6 @@ export default class StageTabs extends React.Component {
         eventList.push(eventObj);
         this.context.d2.Api.getApi().post("events",{events : eventList})
         .then(response => {
-            console.log(response);
             let eventId= response.response.importSummaries[0].reference;
             console.log("event id : "+eventId);
             this.eventId = eventId;
@@ -146,8 +199,6 @@ export default class StageTabs extends React.Component {
     }
 
     setEventDate(event,date) {
-        console.log(date);
-
         this.setState({
             eventDate: date
         })
@@ -201,10 +252,7 @@ export default class StageTabs extends React.Component {
                         <FlatButton label='Create Event' secondary={true} onClick={this.createEvent.bind(this)} />
                     </div>
                     <hr />
-                    { this.state.eventCreated &&
-                        <FormBuilder
-                            fields={this.fields}
-                            onUpdateField={this.handleUpdateFeild} /> }
+                    { this.state.eventCreated && this.getComponentFields(this.elementsData)}
                 </Dialog>
             </div>
         )

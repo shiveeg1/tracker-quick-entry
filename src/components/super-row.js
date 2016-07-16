@@ -174,7 +174,7 @@ export default class CompositeRow extends React.Component {
         			});
         	break;
         	case 'optionSet':
-                    row[cell.id] = cell.options[info[0].target.value-1].displayName;
+                    row[cell.id] = cell.options[info[0].target.value].displayName;
         			this.setState({
         				rowValues: row
         			});
@@ -259,7 +259,6 @@ export default class CompositeRow extends React.Component {
                 component.value = new Date(this.state.rowValues[cell.id]);
         } else
                 component.value = this.state.rowValues[cell.id];
-
         if(component.displayName === 'button') {
         	cell.label = cell.label === 'null' ? this.props.label : cell.label
         	component.props.labelStyle = {color:this.context.muiTheme.rawTheme.palette.primary1Color};

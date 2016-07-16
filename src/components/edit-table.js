@@ -73,7 +73,7 @@ export default class EditTable extends React.Component {
                 programTrackedEntityAttributeSingle.trackedEntityAttribute.optionSet.options.forEach(
                 (optionValue,idx) => {
                     let optionJSON = {};
-                    optionJSON.id=idx+2;
+                    optionJSON.id=idx+1;
                     optionJSON.displayName=optionValue.name;
                     attributeColData.options.push(optionJSON);
                     }
