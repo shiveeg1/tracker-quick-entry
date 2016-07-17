@@ -22,6 +22,7 @@ export default class StageTabs extends React.Component {
     constructor(props,context) {
         super(props,constructor);
         this.elementsData = null;
+        this.eventId = '';
         this.state = {
             open: false,
             eventCreated: false,
@@ -159,11 +160,44 @@ export default class StageTabs extends React.Component {
     }
 
     handleClose = () => {
+        this.putData();
         this.setState({open: false});
     };
 
     handleUpdateFeild() {
         console.log("field updated");
+    }
+
+    putData() {
+        let eventObj = {}, dataValues = [], deo = this.state.dataEntryObj[this.eventId];
+        eventObj["event"] = this.eventId;
+        eventObj["orgUnit"] = this.props.orgUnit;
+        eventObj["program"] = this.props.programId;
+        eventObj["programStage"] = this.props.stage.id;
+        // eventObj["status"] = "COMPLETED";  // TODO ACTIVE,SCHEDULED, COMPLETED
+        eventObj["trackedEntityInstance"] = this.props.teiId;
+
+        for(let key in deo) {
+            if(deo.hasOwnProperty(key))
+                dataValues.push({"value": deo[key], "dataElement": key});
+        }
+        eventObj["dataValues"] = dataValues;
+        $.ajax( {
+    		url: [this.context.d2.Api.getApi().baseUrl,"events",this.eventId].join('/'),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+    		data: JSON.stringify(eventObj),
+    		type: 'PUT',
+    		success: function( data ) {
+    			console.log("success PUT data");
+    		},
+    		error: function( jqXHR, textStatus, errorThrown ) {
+    			console.log("failure PUT data");
+                log.warn('Failed to create event:', jqXHR);
+    		}
+    	} );
     }
 
     createEvent() {
