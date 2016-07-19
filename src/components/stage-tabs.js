@@ -11,6 +11,7 @@ import RadioButton from 'material-ui/lib/radio-button';
 import RadioButtonGroup from 'material-ui/lib/radio-button-group';
 import DatePicker from 'material-ui/lib/date-picker/date-picker';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/lib/card';
+import Snackbar from 'material-ui/lib/snackbar';
 
 // d2-ui
 import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
@@ -29,9 +30,11 @@ export default class StageTabs extends React.Component {
             eventDate: null,
             dataEntryObj: {},
             eventIdList: [],
+            openSnackbar: false,
         };
         this.elementsData = null;
         this.eventId = '';
+        this.snackbarMessage = '';
     }
 
     handleChange = (id,cell,info) => {
@@ -89,6 +92,7 @@ export default class StageTabs extends React.Component {
             eventDate: null,
             dataEntryObj: {},
             eventIdList: [],
+            openSnackbar: false,
         }
     }
 
@@ -203,11 +207,19 @@ export default class StageTabs extends React.Component {
     		type: 'PUT',
     		success: function( data ) {
     			console.log("success PUT data");
-    		},
+                this.snackbarMessage = 'Data successfully stored!';
+                this.setState({
+                    openSnackbar: true
+                });
+    		}.bind(this),
     		error: function( jqXHR, textStatus, errorThrown ) {
     			console.log("failure PUT data");
                 log.warn('Failed to create event:', jqXHR);
-    		}
+                this.snackbarMessage = 'Failed to store data.';
+                this.setState({
+                    openSnackbar: true
+                })
+    		}.bind(this)
     	} );
     }
 
@@ -234,9 +246,12 @@ export default class StageTabs extends React.Component {
             console.log("event id : "+eventId);
             this.eventId = eventId;
             eil.push(eventId);
+            this.snackbarMessage = 'Event successfully created!';
             this.setState({
                 eventCreated: true,
-                eventIdList: eil
+                eventIdList: eil,
+                eventDate: null,
+                openSnackbar: true
             })
         })
         .catch(err => {
@@ -251,6 +266,12 @@ export default class StageTabs extends React.Component {
     setEventDate(event,date) {
         this.setState({
             eventDate: date
+        })
+    }
+
+    handleSackbarRequestClose() {
+        this.setState({
+            openSnackbar: false,
         })
     }
 
@@ -326,6 +347,13 @@ export default class StageTabs extends React.Component {
                         </Card>
                     }
                 </Dialog>
+
+                <Snackbar
+                  open={this.state.openSnackbar}
+                  message={this.snackbarMessage}
+                  autoHideDuration={4000}
+                  onRequestClose={this.handleSackbarRequestClose.bind(this)}
+                />
             </div>
         )
     }

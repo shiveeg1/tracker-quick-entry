@@ -25,7 +25,8 @@ export default class CompositeRow extends React.Component {
     	this.state = {
     		rowValues: [],
             saved: null,
-            fabClicked: false
+            fabClicked: false,
+            openSnackbar: false
     	};
         this.d2 = context.d2;
     	this.props = props;
@@ -68,14 +69,18 @@ export default class CompositeRow extends React.Component {
                 let enrollId= response.response.importSummaries[0].reference;
                 console.log("enrol id : "+enrollId);
                 this.enrollId = enrollId;
+                this.snackbarMessage = 'TEI successfully enrolled!';
                 this.setState({
                     saved: true,
+                    openSnackbar: true
                 })
             })
             .catch(err => {
                 log.warn('Failed to enroll TEI instance:', err.message ? err.message : err);
+                this.snackbarMessage = 'Failed to enroll TEI.';
                 this.setState({
                     saved: false,
+                    openSnackbar: true
                 })
             });
         }
@@ -223,6 +228,12 @@ export default class CompositeRow extends React.Component {
         })
     }
 
+    handleSackbarRequestClose() {
+        this.setState({
+            openSnackbar: false,
+        })
+    }
+
     renderRow() {
         const style = {
             rowStyle: {
@@ -330,6 +341,12 @@ export default class CompositeRow extends React.Component {
                                 )
                             }.bind(this))}
             			</CardText> }
+                        <Snackbar
+                          open={this.state.openSnackbar}
+                          message={this.snackbarMessage}
+                          autoHideDuration={4000}
+                          onRequestClose={this.handleSackbarRequestClose.bind(this)}
+                        />
             		</div>
         		</Card>
         	</TableRowColumn>
