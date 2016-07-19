@@ -10,6 +10,7 @@ import Dialog from 'material-ui/lib/dialog';
 import RadioButton from 'material-ui/lib/radio-button';
 import RadioButtonGroup from 'material-ui/lib/radio-button-group';
 import DatePicker from 'material-ui/lib/date-picker/date-picker';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/lib/card';
 
 // d2-ui
 import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
@@ -20,56 +21,61 @@ import ComponentCategories from './componentCategories';
 
 export default class StageTabs extends React.Component {
     constructor(props,context) {
-        super(props,constructor);
-        this.elementsData = null;
-        this.eventId = '';
+        super(props,context);
+
         this.state = {
             open: false,
             eventCreated: false,
             eventDate: null,
             dataEntryObj: {},
-        }
+            eventIdList: [],
+        };
+        this.elementsData = null;
+        this.eventId = '';
     }
 
     handleChange = (id,cell,info) => {
         let eventData = this.state.dataEntryObj;
-        if(!eventData[this.eventId]) {
-            eventData[this.eventId] = {};
+        let eventId = cell.eventId;
+        if(!eventData[eventId]) {
+            eventData[eventId] = {};
         }
+        console.log(cell,eventId);
+        console.log(eventData);
         let type = cell.type;
         switch (type) {
         	case 'DATE':
-                    eventData[this.eventId][cell.id] = this.formatDate(info[1]);
+                    eventData[eventId][cell.id] = this.formatDate(info[1]);
         			this.setState({
         				dataEntryObj:eventData
         			});
         		break;
         	case 'TEXT':
-                    eventData[this.eventId][cell.id] = info[0].target.value;
+                    eventData[eventId][cell.id] = info[0].target.value;
         			this.setState({
         				dataEntryObj: eventData
         			});
         	break;
         	case 'NUMBER':
-                    eventData[this.eventId][cell.id] = info[0].target.value;
+                    eventData[eventId][cell.id] = info[0].target.value;
         			this.setState({
         				dataEntryObj: eventData
         			});
         	break;
         	case 'BOOLEAN':
-                    eventData[this.eventId][cell.id] = info[1].toString();
+                    eventData[eventId][cell.id] = info[1].toString();
         			this.setState({
         				dataEntryObj: eventData
         			});
         	break;
         	case 'optionSet':
-                    eventData[this.eventId][cell.id] = cell.options[info[0].target.value].displayName;
+                    eventData[eventId][cell.id] = cell.options[info[0].target.value].displayName;
         			this.setState({
         				dataEntryObj: eventData
         			});
         	break;
         	default:
-                    eventData[this.eventId][cell.id] = info[0].target.value;
+                    eventData[eventId][cell.id] = info[0].target.value;
         			this.setState({
         				dataEntryObj: eventData
         			});
@@ -82,10 +88,13 @@ export default class StageTabs extends React.Component {
             eventCreated: false,
             eventDate: null,
             dataEntryObj: {},
+            eventIdList: [],
         }
     }
 
-    getComponentFields(elementArr) {
+    getComponentFields(eventId) {
+        console.log("inside gcf");
+        console.log(eventId);
         const styles = {
             componentStyles : {
                 marginTop: '2px',
@@ -94,7 +103,8 @@ export default class StageTabs extends React.Component {
         }
         let handleChangeRef = null;
 
-        let fieldList = elementArr.map((cell,id) => {
+        let fieldList = this.elementsData.map((cell,id) => {
+            cell.eventId = eventId;
             handleChangeRef = function() {this.handleChange(id,cell,arguments)}.bind(this);
             let component = ComponentCategories(cell,handleChangeRef);
             component.props.style = styles.componentStyles;
@@ -106,10 +116,10 @@ export default class StageTabs extends React.Component {
                 component.props.style.marginBottom = '2px';
             }
 
-            if(cell.type=="DATE" && this.state.dataEntryObj[this.eventId]!=undefined && this.state.dataEntryObj[this.eventId][cell.id]!=''){
-                    component.value = new Date(this.state.dataEntryObj[this.eventId][cell.id]);
+            if(cell.type=="DATE" && this.state.dataEntryObj[eventId]!=undefined && this.state.dataEntryObj[eventId][cell.id]!=''){
+                    component.value = new Date(this.state.dataEntryObj[eventId][cell.id]);
             } else
-                    component.value = this.state.dataEntryObj[this.eventId] ?  this.state.dataEntryObj[this.eventId][cell.id] : undefined;
+                    component.value = this.state.dataEntryObj[eventId] ?  this.state.dataEntryObj[eventId][cell.id] : undefined;
 
             return component;
         });
@@ -160,7 +170,7 @@ export default class StageTabs extends React.Component {
     }
 
     handleClose = () => {
-        this.putData();
+        // this.putData();
         this.setState({open: false});
     };
 
@@ -168,13 +178,13 @@ export default class StageTabs extends React.Component {
         console.log("field updated");
     }
 
-    putData() {
-        let eventObj = {}, dataValues = [], deo = this.state.dataEntryObj[this.eventId];
-        eventObj["event"] = this.eventId;
+    putData(eventId,status) {
+        let eventObj = {}, dataValues = [], deo = this.state.dataEntryObj[eventId];
+        eventObj["event"] = eventId;
         eventObj["orgUnit"] = this.props.orgUnit;
         eventObj["program"] = this.props.programId;
         eventObj["programStage"] = this.props.stage.id;
-        // eventObj["status"] = "COMPLETED";  // TODO ACTIVE,SCHEDULED, COMPLETED
+        eventObj["status"] = status;  // TODO ACTIVE,SCHEDULED, COMPLETED
         eventObj["trackedEntityInstance"] = this.props.teiId;
 
         for(let key in deo) {
@@ -182,6 +192,7 @@ export default class StageTabs extends React.Component {
                 dataValues.push({"value": deo[key], "dataElement": key});
         }
         eventObj["dataValues"] = dataValues;
+        console.log(eventObj);
         $.ajax( {
     		url: [this.context.d2.Api.getApi().baseUrl,"events",this.eventId].join('/'),
             headers: {
@@ -215,17 +226,22 @@ export default class StageTabs extends React.Component {
         eventObj["trackedEntityInstance"] = this.props.teiId;
         eventObj["status"] = "ACTIVE";
         eventList.push(eventObj);
+        let eil = this.state.eventIdList;
+        console.log(this.state.eventIdList);
         this.context.d2.Api.getApi().post("events",{events : eventList})
         .then(response => {
             let eventId= response.response.importSummaries[0].reference;
             console.log("event id : "+eventId);
             this.eventId = eventId;
+            eil.push(eventId);
             this.setState({
                 eventCreated: true,
+                eventIdList: eil
             })
         })
         .catch(err => {
             log.warn('Failed to create event:', err.message ? err.message : err);
+            //TODO show a snackbar here and don't set eventCreate to false
             this.setState({
                 eventCreated: false,
             })
@@ -248,45 +264,67 @@ export default class StageTabs extends React.Component {
                 marginTop: 16,
             },
             eventCreateDiv : {
-                display: 'flex'
+                display:'inline-block',
+                marginRight:24,
             }
         };
 
         const actions = [
             <FlatButton
-                label="Cancel"
+                label="Close"
                 primary={true}
-                onTouchTap={this.handleClose}
-            />,
-            <FlatButton
-                label="Submit"
-                primary={true}
-                keyboardFocused={true}
                 onTouchTap={this.handleClose}
             />,
         ];
 
+        console.log(this.props.stage);
         return (
             <div>
                 <RaisedButton key={this.props.stage.id} label={this.props.stage.displayName} style={styles.stageButtons} onTouchTap={this.handleOpen.bind(this,this.props.stage.id)} />
                 <Dialog
                   title="Data Entry"
                   actions={actions}
-                  modal={false}
+                  modal={true}
                   open={this.state.open}
                   onRequestClose={this.handleClose}
                   autoScrollBodyContent={true} >
 
-                    <div style={styles.eventCreateDiv}>
+                    <div>
                         <DatePicker
                             floatingLabelText="Report date"
                             value={this.state.eventDate}
                             autoOk={true}
-                            onChange={this.setEventDate.bind(this)} />
-                        <FlatButton label='Create Event' secondary={true} onClick={this.createEvent.bind(this)} />
+                            disabled={!this.props.stage.repeatable && this.state.eventCreated}
+                            onChange={this.setEventDate.bind(this)}
+                            style={styles.eventCreateDiv}/>
+                        <FlatButton
+                            label='Create Event'
+                            secondary={true}
+                            disabled={!this.props.stage.repeatable && this.state.eventCreated}
+                            onClick={this.createEvent.bind(this)}
+                            style={styles.eventCreateDiv} />
                     </div>
-                    <hr />
-                    { this.state.eventCreated && this.getComponentFields(this.elementsData)}
+                    { this.state.eventCreated &&
+                        <Card>
+                            {this.state.eventIdList.map(function (eventId,idx) {
+                                return (
+                                <div key={idx}>
+                                    <CardHeader
+                                        title='Event'
+                                        actAsExpander={true}
+                                        showExpandableButton={true}
+                                    />
+                                    <CardText expandable={true}>
+                                        {this.getComponentFields(eventId)}
+                                        <div style={{style:'flex'}}>
+                                            <FlatButton label='Submit' secondary={true} onClick={this.putData.bind(this,eventId,'ACTIVE')} />
+                                            <FlatButton label='Complete' secondary={true} onClick={this.putData.bind(this,eventId,'COMPLETED')} />
+                                        </div>
+                                    </CardText>
+                                </div>)
+                        }.bind(this))}
+                        </Card>
+                    }
                 </Dialog>
             </div>
         )

@@ -57,6 +57,7 @@ export default class EditTable extends React.Component {
                 let stageJSON = {};
                 stageJSON.id=singleStage.id;
                 stageJSON.displayName=singleStage.name;
+                stageJSON.repeatable = singleStage.repeatable;
                 programStages.push(stageJSON);
             }
         )
