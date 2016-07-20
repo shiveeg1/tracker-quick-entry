@@ -60,7 +60,7 @@ export default class StageTabs extends React.Component {
         			});
         	break;
         	case 'NUMBER':
-                    eventData[eventId][cell.id] = info[0].target.value;
+                    eventData[eventId][cell.id] = Number(info[0].target.value);
         			this.setState({
         				dataEntryObj: eventData
         			});
@@ -298,7 +298,6 @@ export default class StageTabs extends React.Component {
             />,
         ];
 
-        console.log(this.props.stage);
         return (
             <div>
                 <RaisedButton key={this.props.stage.id} label={this.props.stage.displayName} style={styles.stageButtons} onTouchTap={this.handleOpen.bind(this,this.props.stage.id)} />
@@ -338,8 +337,14 @@ export default class StageTabs extends React.Component {
                                     <CardText expandable={true}>
                                         {this.getComponentFields(eventId)}
                                         <div style={{style:'flex'}}>
-                                            <FlatButton label='Submit' secondary={true} onClick={this.putData.bind(this,eventId,'ACTIVE')} />
-                                            <FlatButton label='Complete' secondary={true} onClick={this.putData.bind(this,eventId,'COMPLETED')} />
+                                            <FlatButton
+                                                label='Submit'
+                                                secondary={true}
+                                                onClick={this.putData.bind(this,eventId,'ACTIVE')} />
+                                            <FlatButton
+                                                label='Complete'
+                                                secondary={true}
+                                                onClick={this.putData.bind(this,eventId,'COMPLETED')} />
                                         </div>
                                     </CardText>
                                 </div>)

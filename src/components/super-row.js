@@ -33,6 +33,7 @@ export default class CompositeRow extends React.Component {
         this.context=context;
         this.enrollId = '';
         this.instanceId = '';
+        this.snackbarMessage = '';
     }
 
     componentWillReceiveProps() {
@@ -93,21 +94,23 @@ export default class CompositeRow extends React.Component {
         registerPayload["orgUnit"] = this.props.rowData.orgUnit;
         let regFlag = true;
         if(regFlag) {
+            console.log(registerPayload);
             this.d2.Api.getApi().post("trackedEntityInstances",registerPayload)
             .then(response => {
                 let instanceId = response.response.reference;
                 this.instanceId = instanceId;
                 this.handleEnroll(instanceId);
+                this.setState({
+                    saved: true,
+                })
             })
             .catch(err => {
+                console.log(err);
                 log.warn('Failed to register TEI instance:', err.message ? err.message : err);
                 this.setState({
                     saved: false,
                 })
             });
-            this.setState({
-                saved: true,
-            })
         }
     }
 
@@ -167,7 +170,7 @@ export default class CompositeRow extends React.Component {
         			});
         	break;
         	case 'NUMBER':
-                    row[cell.id] = info[0].target.value;
+                    row[cell.id] = Number(info[0].target.value);
         			this.setState({
         				rowValues: row
         			});
@@ -280,9 +283,6 @@ export default class CompositeRow extends React.Component {
             component.props.status = this.state.saved;
             component.props.toggleCard = function() {this.toggleCard()}.bind(this);
         	cellStyle= cell.cellStyle;
-        }
-        else if (component.displayName ==='icon') {
-        	component.props.children = this.state.status;
         }
         return component;
         })
