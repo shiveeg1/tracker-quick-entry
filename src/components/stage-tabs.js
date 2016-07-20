@@ -225,42 +225,51 @@ export default class StageTabs extends React.Component {
 
     createEvent() {
         // TODO how to choose status active / scheduled
-        let eventList = [];
-        let eventObj = {};
-        eventObj["dataValues"] = [];
-        eventObj["notes"] = [];
-        eventObj["dueDate"] = this.formatDate(this.state.eventDate);
-        eventObj["eventDate"] = this.formatDate(this.state.eventDate);
-        eventObj["enrollment"] = this.props.enrollId;
-        eventObj["orgUnit"] = this.props.orgUnit;
-        eventObj["program"] = this.props.programId;
-        eventObj["programStage"] = this.props.stage.id;
-        eventObj["trackedEntityInstance"] = this.props.teiId;
-        eventObj["status"] = "ACTIVE";
-        eventList.push(eventObj);
-        let eil = this.state.eventIdList;
-        console.log(this.state.eventIdList);
-        this.context.d2.Api.getApi().post("events",{events : eventList})
-        .then(response => {
-            let eventId= response.response.importSummaries[0].reference;
-            console.log("event id : "+eventId);
-            this.eventId = eventId;
-            eil.push(eventId);
-            this.snackbarMessage = 'Event successfully created!';
+        if(this.state.eventDate) {
+            let eventList = [];
+            let eventObj = {};
+            eventObj["dataValues"] = [];
+            eventObj["notes"] = [];
+            eventObj["dueDate"] = this.formatDate(this.state.eventDate);
+            eventObj["eventDate"] = this.formatDate(this.state.eventDate);
+            eventObj["enrollment"] = this.props.enrollId;
+            eventObj["orgUnit"] = this.props.orgUnit;
+            eventObj["program"] = this.props.programId;
+            eventObj["programStage"] = this.props.stage.id;
+            eventObj["trackedEntityInstance"] = this.props.teiId;
+            eventObj["status"] = "ACTIVE";
+            eventList.push(eventObj);
+            let eil = this.state.eventIdList;
+            console.log(this.state.eventIdList);
+            this.context.d2.Api.getApi().post("events",{events : eventList})
+            .then(response => {
+                let eventId= response.response.importSummaries[0].reference;
+                console.log("event id : "+eventId);
+                this.eventId = eventId;
+                eil.push(eventId);
+                this.snackbarMessage = 'Event successfully created!';
+                this.setState({
+                    eventCreated: true,
+                    eventIdList: eil,
+                    eventDate: null,
+                    openSnackbar: true
+                })
+            })
+            .catch(err => {
+                log.warn('Failed to create event:', err.message ? err.message : err);
+                //TODO show a snackbar here and don't set eventCreate to false
+                this.setState({
+                    eventCreated: false,
+                })
+            });
+        }
+        else {
+            this.snackbarMessage = 'Event date not filled.';
             this.setState({
-                eventCreated: true,
-                eventIdList: eil,
-                eventDate: null,
                 openSnackbar: true
             })
-        })
-        .catch(err => {
-            log.warn('Failed to create event:', err.message ? err.message : err);
-            //TODO show a snackbar here and don't set eventCreate to false
-            this.setState({
-                eventCreated: false,
-            })
-        });
+        }
+
     }
 
     setEventDate(event,date) {
@@ -330,7 +339,7 @@ export default class StageTabs extends React.Component {
                                 return (
                                 <div key={idx}>
                                     <CardHeader
-                                        title='Event'
+                                        title={'Event '+idx}
                                         actAsExpander={true}
                                         showExpandableButton={true}
                                     />
