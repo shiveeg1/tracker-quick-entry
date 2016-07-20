@@ -265,7 +265,6 @@ export default class CompositeRow extends React.Component {
                     message: this.context.d2.i18n.getTranslation(isRequired.message),
                 }];
         }
-        let cellStyle= {};
 
         if(cell.type=="DATE" && this.state.rowValues[cell.id]!=undefined && this.state.rowValues[cell.id]!=''){
                 component.value = new Date(this.state.rowValues[cell.id]);
@@ -280,7 +279,7 @@ export default class CompositeRow extends React.Component {
             component.props.icon = this.getIcon.call();
             component.props.status = this.state.saved;
             component.props.toggleCard = function() {this.toggleCard()}.bind(this);
-        	cellStyle= cell.cellStyle;
+            component.props.disableStatus = this.state.saved;
         }
         return component;
         })

@@ -49,7 +49,13 @@ export default class ButtonWrapper extends React.Component {
 
         return (
             <div style={styles.wrapperStyle}>
-                <FlatButton label={this.props.label} labelStyle={this.props.labelStyle} onClick={this.props.onClick} icon={this.props.icon} style={this.props.style}/>
+                <FlatButton
+                    label={this.props.label}
+                    labelStyle={this.props.labelStyle}
+                    onClick={this.props.onClick}
+                    icon={this.props.icon}
+                    disabled={this.props.disableStatus}
+                    style={this.props.style} />
                 {this.props.status &&
                     <FloatingActionButton
                         mini={true}
