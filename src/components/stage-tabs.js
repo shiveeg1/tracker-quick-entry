@@ -43,8 +43,6 @@ export default class StageTabs extends React.Component {
         if(!eventData[eventId]) {
             eventData[eventId] = {};
         }
-        console.log(cell,eventId);
-        console.log(eventData);
         let type = cell.type;
         switch (type) {
         	case 'DATE':
@@ -77,6 +75,22 @@ export default class StageTabs extends React.Component {
         				dataEntryObj: eventData
         			});
         	break;
+            case 'FILE_RESOURCE':
+                    if(info[0].target.response.httpStatusCode === 202) {
+                        eventData[eventId][cell.id] = info[0].target.response.response.fileResource.id;
+                        this.snackbarMessage = 'File uploaded successfully';
+                        this.setState({
+            				dataEntryObj: eventData,
+                            openSnackbar: true
+            			});
+                    }
+                    else {
+                        this.snackbarMessage = 'Failed to upload file';
+                        this.setState({
+                            openSnackbar: true
+                        });
+                    }
+                    break;
         	default:
                     eventData[eventId][cell.id] = info[0].target.value;
         			this.setState({
@@ -97,8 +111,6 @@ export default class StageTabs extends React.Component {
     }
 
     getComponentFields(eventId) {
-        console.log("inside gcf");
-        console.log(eventId);
         const styles = {
             componentStyles : {
                 marginTop: '2px',
@@ -196,7 +208,6 @@ export default class StageTabs extends React.Component {
                 dataValues.push({"value": deo[key], "dataElement": key});
         }
         eventObj["dataValues"] = dataValues;
-        console.log(eventObj);
         $.ajax( {
     		url: [this.context.d2.Api.getApi().baseUrl,"events",this.eventId].join('/'),
             headers: {
@@ -206,14 +217,12 @@ export default class StageTabs extends React.Component {
     		data: JSON.stringify(eventObj),
     		type: 'PUT',
     		success: function( data ) {
-    			console.log("success PUT data");
                 this.snackbarMessage = 'Data successfully stored!';
                 this.setState({
                     openSnackbar: true
                 });
     		}.bind(this),
     		error: function( jqXHR, textStatus, errorThrown ) {
-    			console.log("failure PUT data");
                 log.warn('Failed to create event:', jqXHR);
                 this.snackbarMessage = 'Failed to store data.';
                 this.setState({
@@ -240,11 +249,9 @@ export default class StageTabs extends React.Component {
             eventObj["status"] = "ACTIVE";
             eventList.push(eventObj);
             let eil = this.state.eventIdList;
-            console.log(this.state.eventIdList);
             this.context.d2.Api.getApi().post("events",{events : eventList})
             .then(response => {
                 let eventId= response.response.importSummaries[0].reference;
-                console.log("event id : "+eventId);
                 this.eventId = eventId;
                 eil.push(eventId);
                 this.snackbarMessage = 'Event successfully created!';
