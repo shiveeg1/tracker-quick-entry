@@ -272,7 +272,7 @@ export default class CompositeRow extends React.Component {
                 component.value = this.state.rowValues[cell.id];
         if(component.displayName === 'button') {
         	cell.label = cell.label === 'null' ? this.props.label : cell.label
-        	component.props.labelStyle = {color:this.context.muiTheme.rawTheme.palette.primary1Color};
+        	component.props.labelStyle = this.state.saved ? {color:this.context.muiTheme.rawTheme.palette.disabledColor} : {color:this.context.muiTheme.rawTheme.palette.primary1Color};
         	component.props.onClick=this._handleButtonClick.bind(this);
         	component.props.label=cell.label;
         	component.props.style = this.getIconStyle.call();
