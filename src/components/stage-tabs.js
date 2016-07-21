@@ -270,7 +270,7 @@ export default class StageTabs extends React.Component {
             });
         }
         else {
-            this.snackbarMessage = this.context.d2.i18n.getTranslation('empty_date_error.');
+            this.snackbarMessage = this.context.d2.i18n.getTranslation('empty_date_error');
             this.setState({
                 openSnackbar: true
             })
@@ -326,7 +326,7 @@ export default class StageTabs extends React.Component {
 
                     <div>
                         <DatePicker
-                            floatingLabelText={this.context.d2.i18n.getTranslation("report_date")}
+                            hintText={this.context.d2.i18n.getTranslation("report_date")}
                             value={this.state.eventDate}
                             autoOk={true}
                             disabled={!this.props.stage.repeatable && this.state.eventCreated}
