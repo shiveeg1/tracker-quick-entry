@@ -6,6 +6,7 @@ import LinearProgress from 'material-ui/lib/linear-progress';
 import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
 import Checkbox from 'material-ui/lib/checkbox';
+import FontIcon from 'material-ui/lib/font-icon';
 
 import AppTheme from '../theme';
 
@@ -16,6 +17,7 @@ export default class FileUpload extends React.Component {
         this.state = {
             uploading: false,
             progress: undefined,
+            saved: null
         }
     }
 
@@ -37,6 +39,38 @@ export default class FileUpload extends React.Component {
         );
     }
 
+    getIcon = ()=> {
+        console.log("get icon called");
+        if(this.state.saved && !this.state.uploading) {
+            return <FontIcon className="material-icons">done</FontIcon>
+        }
+        else if(this.state.saved === false && !this.state.uploading) {
+            return <FontIcon className="material-icons">warning</FontIcon>
+        }
+        else {
+            return (
+                <FontIcon
+                    className="material-icons"
+                    style={{color:this.context.muiTheme.rawTheme.palette.primary1Color}}>file_upload
+                </FontIcon>
+            )
+
+        }
+    }
+
+    getIconStyle = () => {
+        if(this.state.saved && !this.state.uploading) {
+            console.log("successColor");
+            return {color :this.context.muiTheme.rawTheme.palette.successColor}
+        }
+        else if(this.state.saved === false && !this.state.uploading) {
+            return {color :this.context.muiTheme.rawTheme.palette.warningColor}
+        }
+        else {
+            return {color :this.context.muiTheme.rawTheme.palette.primary1Color}
+        }
+    }
+
     renderUpload() {
         const bodyStyle = {
             backgroundColor: AppTheme.rawTheme.palette.primary1Color,
@@ -50,7 +84,7 @@ export default class FileUpload extends React.Component {
         };
 
         return (
-            <FlatButton label={this.props.label} primary onClick={this._fileClick.bind(this)} />
+            <FlatButton label={this.props.label} icon={this.getIcon.call()} style={this.getIconStyle.call()} onClick={this._fileClick.bind(this)} />
         );
     }
 
@@ -134,6 +168,7 @@ export default class FileUpload extends React.Component {
             this.setState({
                 uploading: false,
                 progress: undefined,
+                saved: true,
             });
         }).catch(() => {
             log.warn('File upload failed:', arguments);
@@ -141,6 +176,7 @@ export default class FileUpload extends React.Component {
             this.setState({
                 uploading: false,
                 progress: undefined,
+                saved: false,
             });
         });
     }
