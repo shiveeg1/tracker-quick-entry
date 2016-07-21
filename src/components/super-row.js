@@ -71,7 +71,7 @@ export default class CompositeRow extends React.Component {
                 let enrollId= response.response.importSummaries[0].reference;
                 console.log("enrol id : "+enrollId);
                 this.enrollId = enrollId;
-                this.snackbarMessage = 'TEI successfully enrolled!';
+                this.snackbarMessage = this.context.d2.i18n.getTranslation("tei_enroll_success");
                 this.setState({
                     saved: true,
                     openSnackbar: true
@@ -79,7 +79,7 @@ export default class CompositeRow extends React.Component {
             })
             .catch(err => {
                 log.warn('Failed to enroll TEI instance:', err.message ? err.message : err);
-                this.snackbarMessage = 'Failed to enroll TEI.';
+                this.context.d2.i18n.getTranslation("tei_enroll_success");
                 this.setState({
                     saved: false,
                     openSnackbar: true
@@ -103,8 +103,10 @@ export default class CompositeRow extends React.Component {
             })
             .catch(err => {
                 log.warn('Failed to register TEI instance:', err.message ? err.message : err);
+                this.context.d2.i18n.getTranslation("tei_reg_error");
                 this.setState({
                     saved: false,
+                    openSnackbar: true,
                 })
             });
         }

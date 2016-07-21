@@ -13,7 +13,7 @@ if (process.env.NODE_ENV !== 'production') {
 import React from 'react';
 import { render } from 'react-dom';
 import log from 'loglevel';
-import { init, config, getManifest } from 'd2/lib/d2';
+import { init, config, getUserSettings, getManifest } from 'd2/lib/d2';
 
 import LoadingMask from 'd2-ui/lib/loading-mask/LoadingMask.component';
 
@@ -43,6 +43,14 @@ function startApp(d2) {
         .catch(err => console.log('failed to initialise d2'+err));
 }
 
+function configI18n(userSettings) {
+    const uiLocale = userSettings.keyUiLocale;
+
+    if (uiLocale !== 'en' && uiLocale !== null) {
+        config.i18n.sources.add(`i18n/module/i18n_module_${uiLocale}.properties`);
+    }
+    config.i18n.sources.add('i18n/module/i18n_module_en.properties');
+}
 
 // Load the application manifest to be able to determine the location of the Api
 // After we have the location of the api, we can set it onto the d2.config object
@@ -54,6 +62,8 @@ getManifest('./manifest.webapp')
         const baseUrl = process.env.NODE_ENV === 'production' ? manifest.getBaseUrl() : dhisDevConfig.baseUrl;
         config.baseUrl = `${baseUrl}/api`;
     })
+    .then(getUserSettings)
+    .then(configI18n)
     .then(init)
     .then(startApp)
     .catch(log.error.bind(log));

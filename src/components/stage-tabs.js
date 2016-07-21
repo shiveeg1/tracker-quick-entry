@@ -77,14 +77,14 @@ export default class StageTabs extends React.Component {
             case 'FILE_RESOURCE':
                     if(info[0].target.response.httpStatusCode === 202) {
                         eventData[eventId][cell.id] = info[0].target.response.response.fileResource.id;
-                        this.snackbarMessage = 'File uploaded successfully';
+                        this.snackbarMessage = this.context.d2.i18n.getTranslation('file_upload_success');
                         this.setState({
             				dataEntryObj: eventData,
                             openSnackbar: true
             			});
                     }
                     else {
-                        this.snackbarMessage = 'Failed to upload file';
+                        this.snackbarMessage = this.context.d2.i18n.getTranslation('file_upload_error');
                         this.setState({
                             openSnackbar: true
                         });
@@ -163,7 +163,7 @@ export default class StageTabs extends React.Component {
                         optionObj.displayName = opt.name;
                         obj.options.push(optionObj);
                     })
-                    obj.options.unshift({id:"placeholder",displayName:"Select Option",disabled:true});
+                    obj.options.unshift({id:"placeholder",displayName:this.context.d2.i18n.getTranslation("select_option"),disabled:true});
                 }
                 else {
                     obj.type= stageElements.dataElement.valueType;
@@ -216,14 +216,14 @@ export default class StageTabs extends React.Component {
     		data: JSON.stringify(eventObj),
     		type: 'PUT',
     		success: function( data ) {
-                this.snackbarMessage = 'Data successfully stored!';
+                this.snackbarMessage = this.context.d2.i18n.getTranslation('data_store_success');
                 this.setState({
                     openSnackbar: true
                 });
     		}.bind(this),
     		error: function( jqXHR, textStatus, errorThrown ) {
                 log.warn('Failed to create event:', jqXHR);
-                this.snackbarMessage = 'Failed to store data.';
+                this.snackbarMessage = this.context.d2.i18n.getTranslation('data_store_error');
                 this.setState({
                     openSnackbar: true
                 })
@@ -253,7 +253,7 @@ export default class StageTabs extends React.Component {
                 let eventId= response.response.importSummaries[0].reference;
                 this.eventId = eventId;
                 eil.push(eventId);
-                this.snackbarMessage = 'Event successfully created!';
+                this.snackbarMessage = this.context.d2.i18n.getTranslation('event_created_success');
                 this.setState({
                     eventCreated: true,
                     eventIdList: eil,
@@ -262,15 +262,15 @@ export default class StageTabs extends React.Component {
                 })
             })
             .catch(err => {
-                log.warn('Failed to create event:', err.message ? err.message : err);
-                //TODO show a snackbar here and don't set eventCreate to false
+                log.warn('event_created_error', err.message ? err.message : err);
+                this.snackbarMessage = this.context.d2.i18n.getTranslation('event_created_error');
                 this.setState({
-                    eventCreated: false,
+                    openSnackbar: true
                 })
             });
         }
         else {
-            this.snackbarMessage = 'Event date not filled.';
+            this.snackbarMessage = this.context.d2.i18n.getTranslation('empty_date_error.');
             this.setState({
                 openSnackbar: true
             })
@@ -317,7 +317,7 @@ export default class StageTabs extends React.Component {
             <div>
                 <RaisedButton key={this.props.stage.id} label={this.props.stage.displayName} style={styles.stageButtons} onTouchTap={this.handleOpen.bind(this,this.props.stage.id)} />
                 <Dialog
-                  title="Data Entry"
+                  title={this.context.d2.i18n.getTranslation("data_entry")}
                   actions={actions}
                   modal={true}
                   open={this.state.open}
@@ -326,14 +326,14 @@ export default class StageTabs extends React.Component {
 
                     <div>
                         <DatePicker
-                            floatingLabelText="Report date"
+                            floatingLabelText={this.context.d2.i18n.getTranslation("report_date")}
                             value={this.state.eventDate}
                             autoOk={true}
                             disabled={!this.props.stage.repeatable && this.state.eventCreated}
                             onChange={this.setEventDate.bind(this)}
                             style={styles.eventCreateDiv}/>
                         <FlatButton
-                            label='Create Event'
+                            label={this.context.d2.i18n.getTranslation("create_event")}
                             secondary={true}
                             disabled={!this.props.stage.repeatable && this.state.eventCreated}
                             onClick={this.createEvent.bind(this)}
@@ -345,7 +345,7 @@ export default class StageTabs extends React.Component {
                                 return (
                                 <div key={idx}>
                                     <CardHeader
-                                        title={'Event '+idx}
+                                        title={this.context.d2.i18n.getTranslation("event")+": "+idx}
                                         actAsExpander={true}
                                         showExpandableButton={true}
                                     />

@@ -95,7 +95,6 @@ export default function getComponent(cell,hc) {
                             onChange: hc,
                             menuItems: cell.options,
                             includeEmpty: true,
-                            emptyLabel: 'Select Program',
                             style:{width:200}
                         }),
                     });

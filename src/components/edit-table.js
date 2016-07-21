@@ -80,7 +80,7 @@ export default class EditTable extends React.Component {
                     attributeColData.options.push(optionJSON);
                     }
                 )
-                attributeColData.options.unshift({id:"placeholder",displayName:"Select Option",disabled:true});
+                attributeColData.options.unshift({id:"placeholder",displayName:this.context.d2.i18n.getTranslation("select_option"),disabled:true});
             }
             else
                 attributeColData.type=programTrackedEntityAttributeSingle.valueType;
@@ -138,7 +138,7 @@ export default class EditTable extends React.Component {
         }
 
         return ( this.state.selectedProgData.headers.map((cell,id) => {
-            let headerPosStyle = cell.label == 'Save' ? {paddingTop:20,display:'block'} : {};
+            let headerPosStyle = cell.label == this.context.d2.i18n.getTranslation('save') ? {paddingTop:20,display:'block'} : {};
             let cellStyle= !!cell.cellStyle ? cell.cellStyle :headerStyle;
             return (
                 <TableHeaderColumn
