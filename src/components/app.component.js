@@ -3,7 +3,7 @@ import log from 'loglevel';
 import Rx from 'rx';
 //d2
 import HeaderBar from 'd2-ui/lib/header-bar/HeaderBar.component';
-import OrgUnitTree from 'd2-ui/lib/org-unit-tree';
+import OrgUnitTree from 'd2-ui/lib/org-unit-tree/OrgUnitTree.component.js';
 
 //App
 import HackyDropdown from './drop-down';
@@ -60,7 +60,7 @@ class App extends React.Component {
                 if(oneProgram.programTrackedEntityAttributes.valuesContainerMap.size > 0)
                     dropdownProgList.push({id:oneProgram.id,displayName:oneProgram.name});
             })
-            dropdownProgList.unshift({id:"placeholder",displayName:"Select Program",disabled:true});
+            dropdownProgList.unshift({id:"placeholder",displayName:this.props.d2.i18n.getTranslation('select_program'),disabled:true});
             this.setState({
                 allOrgProgData: orgUnitData.programs,
                 programList: dropdownProgList,
