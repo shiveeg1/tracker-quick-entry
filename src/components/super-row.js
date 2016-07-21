@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDom from 'react-dom';
 import times from 'lodash.times';
 import log from 'loglevel';
 // material-ui
@@ -74,7 +75,7 @@ export default class CompositeRow extends React.Component {
                 this.setState({
                     saved: true,
                     openSnackbar: true
-                })
+                });
             })
             .catch(err => {
                 log.warn('Failed to enroll TEI instance:', err.message ? err.message : err);
@@ -99,9 +100,6 @@ export default class CompositeRow extends React.Component {
                 let instanceId = response.response.reference;
                 this.instanceId = instanceId;
                 this.handleEnroll(instanceId);
-                this.setState({
-                    saved: true,
-                })
             })
             .catch(err => {
                 log.warn('Failed to register TEI instance:', err.message ? err.message : err);
@@ -226,7 +224,10 @@ export default class CompositeRow extends React.Component {
     toggleCard() {
         this.setState({
             fabClicked: !this.state.fabClicked
-        })
+        },function() {
+            if(this.state.fabClicked)
+                ReactDom.findDOMNode(this.refs.firstStage).scrollIntoView();
+        });
     }
 
     handleSackbarRequestClose() {
@@ -293,19 +294,19 @@ export default class CompositeRow extends React.Component {
         )
     }
 
-  render() {
+    render() {
 	const styles = {
         noPad : {
     		padding:'0px',
             borderTop:this.state.saved ? 'solid 1px #bdbdbd' : 'solid 0px #bdbdbd',
-    		maxHeight:this.state.saved ? '500px' : '0px',
+    		maxHeight:this.state.saved ? '70px' : '0px',
     		transition:'all 1s ease'
         },
 	    cardStyle : {
             paddingTop:"0px",
             paddingBottom:"0px",
             borderTop:this.state.fabClicked ? 'solid 1px #bdbdbd' : 'solid 0px #bdbdbd',
-    		maxHeight:this.state.fabClicked ? '500px' : '0px',
+    		maxHeight:this.state.fabClicked ? '70px' : '0px',
             visibility: this.state.fabClicked ? 'visible' : 'hidden',
     		transition:'all 1s ease',
             display: 'flex'
@@ -327,15 +328,29 @@ export default class CompositeRow extends React.Component {
                         <CardText style={styles.cardStyle}>
                             {times(arrLen,function () {
                                 index++;
-                                return (
-                                    <StageTabs
-                                        key={this.props.rowData.programStages[index].id}
-                                        stage={this.props.rowData.programStages[index]}
-                                        programId={this.props.rowData.programId}
-                                        orgUnit={this.props.rowData.orgUnit}
-                                        enrollId= {this.enrollId}
-                                        teiId= {this.instanceId} />
-                                )
+                                if(index === 0) {
+                                    return (
+                                        <StageTabs
+                                            key={this.props.rowData.programStages[index].id}
+                                            ref="firstStage"
+                                            stage={this.props.rowData.programStages[index]}
+                                            programId={this.props.rowData.programId}
+                                            orgUnit={this.props.rowData.orgUnit}
+                                            enrollId= {this.enrollId}
+                                            teiId= {this.instanceId} />
+                                    )
+                                }
+                                else {
+                                    return (
+                                        <StageTabs
+                                            key={this.props.rowData.programStages[index].id}
+                                            stage={this.props.rowData.programStages[index]}
+                                            programId={this.props.rowData.programId}
+                                            orgUnit={this.props.rowData.orgUnit}
+                                            enrollId= {this.enrollId}
+                                            teiId= {this.instanceId} />
+                                    )
+                                }
                             }.bind(this))}
             			</CardText> }
                         <Snackbar
