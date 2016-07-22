@@ -151,6 +151,7 @@ export default class StageTabs extends React.Component {
         this.context.d2.models.programStages.get(stageId,{paging:false,fields:'id,program,programStageDataElements[id,dataElement[id,displayName,description,publicAccess,valueType,optionSet[id,name,optionSetValue,options[id,name]]]]'})
         .then(stageData => {
             stageData.programStageDataElements.valuesContainerMap.forEach(stageElements => {
+                let flag = false;
                 let obj = {};
                 obj.id = stageElements.dataElement.id;
                 obj.name = stageElements.dataElement.displayName;
@@ -161,9 +162,16 @@ export default class StageTabs extends React.Component {
                         let optionObj = {};
                         optionObj.id = index+1;
                         optionObj.displayName = opt.name;
-                        obj.options.push(optionObj);
+                        if(this.eventId!='' && this.state.dataEntryObj[this.eventId][obj.id]==optionObj.displayName){
+                            flag = true;
+                            obj.options.unshift(optionObj);
+                        } else {
+                            obj.options.push(optionObj);
+                        }
+                        // obj.options.push(optionObj);
                     })
-                    obj.options.unshift({id:"placeholder",displayName:this.context.d2.i18n.getTranslation("select_option"),disabled:true});
+                    if(!flag)
+                        obj.options.unshift({id:"placeholder",displayName:this.context.d2.i18n.getTranslation("select_option"),disabled:true});
                 }
                 else {
                     obj.type= stageElements.dataElement.valueType;
