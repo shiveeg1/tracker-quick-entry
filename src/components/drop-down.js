@@ -9,7 +9,7 @@ injectTapEventPlugin();
 const styles = {
     customize: {
       fontFamily:'Roboto, Arial, sans-serif',
-      fontSize:'16px',
+      fontSize:'14px',
       width:'auto',
     }
 };

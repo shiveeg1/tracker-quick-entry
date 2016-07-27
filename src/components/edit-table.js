@@ -4,6 +4,7 @@ import log from 'loglevel';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/lib/table';
 import SelectField from 'material-ui/lib/select-field';
 import MenuItem from 'material-ui/lib/menus/menu-item';
+import FlatButton from 'material-ui/lib/flat-button';
 //d2-ui
 import CheckBox from 'd2-ui/lib/form-fields/check-box';
 //loadash
@@ -16,12 +17,14 @@ import CompositeRow from './super-row';
     TODO validations for fields */
 export default class EditTable extends React.Component {
     constructor(props,context) {
-        super(props);
+        super(props,context);
+        this.props = props;
         this.state = {
             selectedProgData:{
                 headers:[],
                 programStages:[],
-            }
+            },
+            rowCount: props.rowCount,
         };
     }
 
@@ -40,7 +43,7 @@ export default class EditTable extends React.Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) {
-        if(this.state.selectedProgData.programId!=nextState.selectedProgData.programId)
+        if((this.state.selectedProgData.programId!=nextState.selectedProgData.programId) || (this.state.rowCount< nextState.rowCount))
             return true;
         return false;
     }
@@ -115,7 +118,7 @@ export default class EditTable extends React.Component {
                 programData.orgUnit = subscriptionObj.selectedOrg;
                 programData.headers = attributeRow;
                 programData.programStages = programStages;
-                this.setState({selectedProgData:programData})
+                this.setState({selectedProgData:programData,rowCount:this.props.rowCount})
             }
         })}.bind(this))
         .catch(err => {
@@ -126,7 +129,8 @@ export default class EditTable extends React.Component {
                 selectedProgData : {
                     headers:[],
                     programStages:[],
-                }
+                },
+                rowCount:this.props.rowCount,
             });
         }
     }
@@ -170,6 +174,14 @@ export default class EditTable extends React.Component {
         }
     }
 
+    addRow() {
+        let rowCount = this.state.rowCount+1;
+        console.log(rowCount);
+        this.setState({
+            rowCount:rowCount
+        });
+    }
+
     render() {
         const styles = {
             bodyStyles: {
@@ -187,6 +199,10 @@ export default class EditTable extends React.Component {
                 width: this.state.selectedProgData.headers.length*200,
                 display:"block",
                 height:"20px"
+            },
+            addRowButton: {
+                margin: "2 auto",
+                left: "50%"
             }
         }
 
@@ -206,11 +222,11 @@ export default class EditTable extends React.Component {
                             </TableRow>
                         </TableHeader>
                         <TableBody {...this.props.tableBodyProps}>
-                            {times(this.props.rowCount,function () {
+                            {times(this.state.rowCount,function () {
                             return (
                             <CompositeRow
+                                update={this.props.rowCount === this.state.rowCount}
                                 key={index++}
-                                obs ={this.context.programObservable}
                                 rowData={this.state.selectedProgData}
                                 {...this.props}/>
                             )
@@ -219,6 +235,7 @@ export default class EditTable extends React.Component {
                     </Table>
                 </div>
                 </div>
+                <FlatButton label={this.context.d2.i18n.getTranslation('add_row')} style={styles.addRowButton} secondary={true} onClick={this.addRow.bind(this)} />
             </div>
         )
     }

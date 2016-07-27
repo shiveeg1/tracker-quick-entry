@@ -37,12 +37,14 @@ export default class CompositeRow extends React.Component {
         this.snackbarMessage = '';
     }
 
-    componentWillReceiveProps() {
-        this.setState({
-		    rowValues:[],
-            saved: null,
-            fabClicked: false
-	    })
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.update) {
+            this.setState({
+    		    rowValues:[],
+                saved: null,
+                fabClicked: false
+    	    })
+        }
       }
 
     getTodayDate() {
