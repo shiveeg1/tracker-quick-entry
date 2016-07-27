@@ -1,6 +1,7 @@
 import React from 'react';
 import SelectField from 'material-ui/lib/select-field';
 import MenuItem from 'material-ui/lib/menus/menu-item';
+import Colors from 'material-ui/lib/styles/colors';
 
 var injectTapEventPlugin = require('react-tap-event-plugin');
 injectTapEventPlugin();
@@ -8,7 +9,7 @@ injectTapEventPlugin();
 const styles = {
     customize: {
       fontFamily:'Roboto, Arial, sans-serif',
-      fontSize:'14px',
+      fontSize:'16px',
       width:'auto',
     }
 };
@@ -69,6 +70,19 @@ export default class HackyDropDown extends React.Component {
     }
 
     render() {
+        const defaultStyle = {
+            underline: {
+              borderTop: !!this.props.errorText?'solid 1px'+Colors.red500:'solid 1px #bdbdbd',
+              bottom: 1,
+              left: 0,
+              margin: '0px ' + 'spacing.desktopGutter' + 'px',
+              right: 0,
+              position: 'absolute'
+          },
+          icon: {
+            fill: !!this.props.errorText?'red':'#bdbdbd',
+          },
+        }
         const {onChange, menuItems, ...other} = this.props;
         return (
             <div>
@@ -77,6 +91,8 @@ export default class HackyDropDown extends React.Component {
                 <SelectField value={this.state.value}
                     onChange={this.handleChange.bind(this)}
                     style={Object.assign({},styles.customize,this.props.style)}
+                    underlineStyle={defaultStyle.underline}
+                    iconStyle={defaultStyle.icon}
                     autoWidth={true}
                     disabled={this.props.menuItems.length>1?false:true}
                     floatingLabelText={this.props.floatingLabelText}>
