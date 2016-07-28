@@ -72,7 +72,7 @@ export default class HackyDropDown extends React.Component {
     render() {
         const defaultStyle = {
             underline: {
-              borderTop: !!this.props.errorText?'solid 1px'+Colors.red500:'solid 1px #bdbdbd',
+              borderTop: !!this.props.errorText?'solid 1px'+Colors.red500:'solid 0px #bdbdbd',
               bottom: 1,
               left: 0,
               margin: '0px ' + 'spacing.desktopGutter' + 'px',
