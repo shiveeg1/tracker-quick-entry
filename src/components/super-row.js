@@ -230,7 +230,7 @@ export default class CompositeRow extends React.Component {
             fabClicked: !this.state.fabClicked
         },function() {
             if(this.state.fabClicked)
-                ReactDom.findDOMNode(this.refs.firstStage).scrollIntoView();
+                ReactDom.findDOMNode(this.refs.firstStage).closest("div.scroll-basic").firstChild.scrollLeft=0;
         });
     }
 
