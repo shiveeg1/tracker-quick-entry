@@ -20,6 +20,12 @@ export default class ButtonWrapper extends React.Component {
         this.props.toggleCard();
     }
 
+    componentWillReceiveProps() {
+        this.setState({
+            rotate: false
+        });
+    }
+
     render() {
         const styles = {
             wrapperStyle : {
@@ -80,8 +86,8 @@ ButtonWrapper.propTypes = {
     label : React.PropTypes.string,
     labelStyle : React.PropTypes.object,
     onClick : React.PropTypes.func,
-    style : React.PropTypes.object
-
+    style : React.PropTypes.object,
+    status: React.PropTypes.bool,
 }
 
 ButtonWrapper.contextTypes = {muiTheme: React.PropTypes.object.isRequired}

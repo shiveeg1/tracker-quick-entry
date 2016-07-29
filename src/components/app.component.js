@@ -3,7 +3,7 @@ import log from 'loglevel';
 import Rx from 'rx';
 //d2
 import HeaderBar from 'd2-ui/lib/header-bar/HeaderBar.component';
-import OrgUnitTree from 'd2-ui/lib/org-unit-tree/OrgUnitTree.component.js';
+import OrgUnitTree from 'd2-ui/lib/org-unit-tree/OrgUnitTree.component';
 
 //App
 import HackyDropdown from './drop-down';
@@ -12,7 +12,7 @@ import EditTable from './edit-table';
 
 class App extends React.Component {
     constructor(props,context){
-        super(props);
+        super(props,context);
         this.state = Object.assign({},{
             programList: [],
             selectedOrg: '',
