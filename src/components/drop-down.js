@@ -109,12 +109,14 @@ HackyDropDown.propTypes = {
         React.PropTypes.number,
         React.PropTypes.bool,
     ]),
-    value: React.PropTypes.string.isRequired,
     onChange: React.PropTypes.func,
     menuItems: React.PropTypes.oneOfType([
-        React.PropTypes.array,
+        React.PropTypes.arrayOf(React.PropTypes.shape({
+            id: React.PropTypes.string,
+            displayName: React.PropTypes.string,
+        })),
         React.PropTypes.object,
-    ]),
+    ]).isRequired,
     includeEmpty: React.PropTypes.bool,
     emptyLabel: React.PropTypes.string,
 };

@@ -1,7 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import log from 'loglevel';
-import { config } from 'd2/lib/d2';
+//d2
+import { config, init } from 'd2/lib/d2';
+import Model from 'd2/lib/model/Model';
+import ModelDefinition from 'd2/lib/model/ModelDefinition';
+
 // d2-ui
 import HeaderBar from 'd2-ui/lib/header-bar/HeaderBar.component';
 import OrgUnitTree from 'd2-ui/lib/org-unit-tree/OrgUnitTree.component';
@@ -13,20 +17,20 @@ import AppTheme from '../../src/theme';
 // material-ui
 import FlatButton from 'material-ui/lib/flat-button';
 import FloatingActionButton from 'material-ui/lib/floating-action-button';
+import SelectField from 'material-ui/lib/select-field';
 
 describe('<AppComponent>',() => {
     let appComponent;
+    let rootModel;
 
     beforeEach(() => {
-        appComponent = shallow(<AppComponent />);
+        rootModel = new Model(new ModelDefinition('organisationUnit', 'organisationUnits', {}, [], {}, [], []));
+        rootModel.displayName = 'Norway';
+        appComponent = shallow(<AppComponent root={rootModel}/>);
     });
 
     it('should render the HeaderBar component from d2-ui', () => {
         expect(appComponent.find(HeaderBar)).to.have.length(1);
-    });
-
-    it('should render an Org tree', () => {
-        expect(appComponent.find(OrgUnitTree)).to.have.length(1);
     });
 
     it('should render an Org tree', () => {
@@ -63,5 +67,17 @@ describe('<ButtonWrapper>',() => {
     it('should render the FloatingActionButton component from d2-ui when prop "status" is defined', () => {
         buttonWrapper.setProps({status : true});
         expect(buttonWrapper.find(FloatingActionButton)).to.have.length(1);
+    });
+});
+
+describe('<HackyDropDown>',()=> {
+    let hackyDropDown;
+    const menus = [{id:"id1", displayName:"one"},{id:"id2", displayName:"two"}];
+    beforeEach(() => {
+        hackyDropDown = shallow(<HackyDropdown menuItems={menus} />);
+    });
+
+    it('should render the SelectField component', () => {
+        expect(hackyDropDown.find(SelectField)).to.have.length(1);
     });
 });

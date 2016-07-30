@@ -91,7 +91,6 @@ export default function getComponent(cell,hc) {
                         component: HackyDropdown,
                         changeEvent: 'onChange',
                         props: Object.assign({}, fieldBase.props, {
-                            value:'dropValue',
                             onChange: hc,
                             menuItems: cell.options,
                             includeEmpty: true,
