@@ -1,11 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import log from 'loglevel';
+import Rx from 'rx';
+import jquery from 'jquery/dist/jquery';
 //d2
-import { config, init } from 'd2/lib/d2';
+import {config, init} from 'd2/lib/d2';
 import Model from 'd2/lib/model/Model';
 import ModelDefinition from 'd2/lib/model/ModelDefinition';
-
 // d2-ui
 import HeaderBar from 'd2-ui/lib/header-bar/HeaderBar.component';
 import OrgUnitTree from 'd2-ui/lib/org-unit-tree/OrgUnitTree.component';
@@ -13,11 +14,13 @@ import OrgUnitTree from 'd2-ui/lib/org-unit-tree/OrgUnitTree.component';
 import AppComponent from '../../src/components/app.component';
 import HackyDropdown from '../../src/components/drop-down';
 import ButtonWrapper from '../../src/components/button-wrapper';
+import EditTable from '../../src/components/edit-table';
 import AppTheme from '../../src/theme';
 // material-ui
 import FlatButton from 'material-ui/lib/flat-button';
 import FloatingActionButton from 'material-ui/lib/floating-action-button';
 import SelectField from 'material-ui/lib/select-field';
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/lib/table';
 
 describe('<AppComponent>',() => {
     let appComponent;
@@ -79,5 +82,74 @@ describe('<HackyDropDown>',()=> {
 
     it('should render the SelectField component', () => {
         expect(hackyDropDown.find(SelectField)).to.have.length(1);
+    });
+});
+
+describe('<EditTable>', () => {
+    let editTable;
+    let rootModel;
+
+    const selectedProgData = {
+        headers:[
+            {name: "h1",type: "TEXT", required: true},
+            {name: "h2",type: "TEXT", required: true},
+            {name: "h3",type: "TEXT", required: true}
+        ]};
+
+    const styles = {
+        bodyStyles: {
+            overflowX:'visible',
+            width: selectedProgData.headers.length * 200
+        },
+        scrollWrapperStyle: {
+            overflowX:"auto",
+            overflowY:"hidden",
+            height:"20px",
+            marginBottom:"-20px",
+            marginLeft:"10px",
+        },
+        scrollDivStyle: {
+            width: selectedProgData.headers.length * 200,
+            display:"block",
+            height:"20px"
+        },
+        addRowButton: {
+            margin: "2 auto",
+            left: "50%"
+        }
+    }
+
+    let programObservable = new Rx.Subject();
+    programObservable.onNext({selectedProg:"IpHINAT79UW",selectedOrg:'DiszpKrYNg8'});
+
+    const context = {
+        programObservable : programObservable,
+        d2: {
+            i18n: {
+                getTranslation(key) {
+                    return `${key}_translated`;
+                },
+            },
+        }
+    }
+
+    beforeEach(() => {
+        editTable = shallow(<EditTable style={styles}/>,{context});
+    });
+
+    it('should render the Table component', () => {
+        editTable.setState({
+            selectedProgData:{
+                headers:[
+                    {name: "h1",type: "TEXT", required: true},
+                    {name: "h2",type: "TEXT", required: true},
+                    {name: "h3",type: "TEXT", required: true}
+                ],
+                programStages:[],
+            },
+            rowCount:10
+        });
+
+    expect(editTable.find(Table)).to.have.length(1);
     });
 });

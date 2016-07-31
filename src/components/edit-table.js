@@ -142,7 +142,9 @@ export default class EditTable extends React.Component {
         }
 
         return ( this.state.selectedProgData.headers.map((cell,id) => {
-            let headerPosStyle = cell.label == this.context.d2.i18n.getTranslation('save') ? {paddingTop:20,display:'block'} : {};
+            let headerPosStyle = cell.label == this.context.d2.i18n.getTranslation('save')
+            ? {paddingTop:20,display:'block'}
+            : {};
             let cellStyle= !!cell.cellStyle ? cell.cellStyle :headerStyle;
             return (
                 <TableHeaderColumn
@@ -176,7 +178,6 @@ export default class EditTable extends React.Component {
 
     addRow() {
         let rowCount = this.state.rowCount+1;
-        console.log(rowCount);
         this.setState({
             rowCount:rowCount
         });
@@ -240,7 +241,7 @@ export default class EditTable extends React.Component {
         )
     }
 }
-// TODO add selectedProgData propTypes
+
 EditTable.propTypes = {
     style : React.PropTypes.object.isRequired,
     tableProps: React.PropTypes.object,
