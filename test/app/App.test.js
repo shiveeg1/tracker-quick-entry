@@ -15,6 +15,7 @@ import AppComponent from '../../src/components/app.component';
 import HackyDropdown from '../../src/components/drop-down';
 import ButtonWrapper from '../../src/components/button-wrapper';
 import EditTable from '../../src/components/edit-table';
+import CompositeRow from '../../src/components/super-row';
 import AppTheme from '../../src/theme';
 // material-ui
 import FlatButton from 'material-ui/lib/flat-button';
@@ -147,9 +148,43 @@ describe('<EditTable>', () => {
                 ],
                 programStages:[],
             },
-            rowCount:10
+            rowCount:2
         });
 
     expect(editTable.find(Table)).to.have.length(1);
+    });
+
+    it('Should render set number of CompositeRow',() => {
+        let numberOfRows = 5;
+        editTable.setState({
+            selectedProgData:{
+                headers:[
+                    {name: "h1",type: "TEXT", required: true},
+                    {name: "h2",type: "TEXT", required: true},
+                    {name: "h3",type: "TEXT", required: true}
+                ],
+                programStages:[],
+            },
+            rowCount:numberOfRows
+        });
+
+        expect(editTable.find(CompositeRow)).to.have.length(numberOfRows);
+    });
+
+    it('should set props of CompositeRow', () => {
+        editTable.setState({
+            selectedProgData:{
+                headers:[
+                    {name: "h1",type: "TEXT", required: true},
+                    {name: "h2",type: "TEXT", required: true},
+                    {name: "h3",type: "TEXT", required: true}
+                ],
+                programStages:[],
+            },
+            rowCount:2
+        });
+        const compositeRow = editTable.find(CompositeRow).first();
+
+        expect(editTable.find(CompositeRow).first().props().update).to.equal(false);
     });
 });
