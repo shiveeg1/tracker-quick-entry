@@ -372,7 +372,7 @@ export default class CompositeRow extends React.Component {
 	)
   }
 }
-// TODO add rowData propTypes
+
 CompositeRow.propTypes = {
     rowData : React.PropTypes.shape({
         headers: React.PropTypes.arrayOf(React.PropTypes.shape({

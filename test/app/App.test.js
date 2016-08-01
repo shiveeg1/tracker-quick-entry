@@ -1,5 +1,6 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import ReactDom from 'react-dom';
+import { shallow, mount } from 'enzyme';
 import log from 'loglevel';
 import Rx from 'rx';
 import jquery from 'jquery/dist/jquery';
@@ -21,6 +22,8 @@ import AppTheme from '../../src/theme';
 import StageTabs from '../../src/components/stage-tabs';
 // material-ui
 import FlatButton from 'material-ui/lib/flat-button';
+import RaisedButton from 'material-ui/lib/raised-button';
+import Dialog from 'material-ui/lib/dialog';
 import FloatingActionButton from 'material-ui/lib/floating-action-button';
 import SelectField from 'material-ui/lib/select-field';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/lib/table';
@@ -221,6 +224,7 @@ describe('<CompositeRow>', () => {
         ],
         programStages:[{id: "1"}, {id: "2"}, {id:"3"}],
         programId: 'randomId',
+        orgUnit: 'organisationUnit'
     };
 
     const context = {
@@ -259,5 +263,69 @@ describe('<CompositeRow>', () => {
             saved: true
         });
         expect(compositeRow.find(StageTabs)).to.have.length(rowData.programStages.length);
+    });
+});
+
+describe('<StageTabs>', () => {
+    const context = {
+        muiTheme: AppTheme,
+        d2: {
+            i18n: {
+                getTranslation(key) {
+                    return `${key}_translated`;
+                },
+            },
+            models : {
+                programStages: {
+                    get(id,obj) {
+                        var promise = new Promise(function(resolve, reject) {
+                          // do a thing, possibly async, then…
+
+                          if (true) {
+                            resolve(
+                                 {
+                                     programStageDataElements : {
+                                         valuesContainerMap: []
+                                     }
+                                 }
+                            );
+                          }
+                          else {
+                            reject(Error("It broke"));
+                          }
+                        });
+                        return promise;
+                    }
+                }
+            }
+        }
+    };
+
+    let stageTabs;
+
+    beforeEach(() => {
+        stageTabs = shallow(<StageTabs
+            stage= {{id: 'qwerty', displayName: 'stageName', repeatable: false}}
+            programId='progId'
+            orgUnit='orgUnit'
+            enrollId='enrollId'
+            displayName='displayName'
+            teiId='teiId' />, {context});
+    });
+
+    it('should render RaisedButton & Dialog for stageName', () => {
+        expect(stageTabs.find(RaisedButton)).to.have.length(1);
+        expect(stageTabs.find(Dialog)).to.have.length(1);
+    });
+
+    it('should NOT render the card if the state eventCreated is not set', () => {
+        expect(stageTabs.find(Card)).to.have.length(0);
+    });
+
+    it('should render the card if the state eventCreated is set', () => {
+        stageTabs.setState({
+            eventCreated: true
+        });
+        expect(stageTabs.find(Card)).to.have.length(1);
     });
 });

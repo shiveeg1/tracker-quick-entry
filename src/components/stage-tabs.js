@@ -193,7 +193,6 @@ export default class StageTabs extends React.Component {
     }
 
     handleClose = () => {
-        // this.putData();
         this.setState({open: false});
     };
 
@@ -387,4 +386,12 @@ export default class StageTabs extends React.Component {
     }
 }
 
-StageTabs.contextTypes = { d2: React.PropTypes.object, muiTheme: React.PropTypes.object.isRequired };
+StageTabs.propTypes = {
+    stage: React.PropTypes.object.isRequired,
+    programId: React.PropTypes.string.isRequired,
+    orgUnit: React.PropTypes.string.isRequired,
+    enrollId: React.PropTypes.string.isRequired,
+    teiId: React.PropTypes.string.isRequired,
+}
+
+StageTabs.contextTypes = { d2: React.PropTypes.object.isRequired, muiTheme: React.PropTypes.object.isRequired };
