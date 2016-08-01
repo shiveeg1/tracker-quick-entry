@@ -10,6 +10,7 @@ import ModelDefinition from 'd2/lib/model/ModelDefinition';
 // d2-ui
 import HeaderBar from 'd2-ui/lib/header-bar/HeaderBar.component';
 import OrgUnitTree from 'd2-ui/lib/org-unit-tree/OrgUnitTree.component';
+import FormBuilder from 'd2-ui/lib/forms/FormBuilder.component';
 // src
 import AppComponent from '../../src/components/app.component';
 import HackyDropdown from '../../src/components/drop-down';
@@ -17,11 +18,13 @@ import ButtonWrapper from '../../src/components/button-wrapper';
 import EditTable from '../../src/components/edit-table';
 import CompositeRow from '../../src/components/super-row';
 import AppTheme from '../../src/theme';
+import StageTabs from '../../src/components/stage-tabs';
 // material-ui
 import FlatButton from 'material-ui/lib/flat-button';
 import FloatingActionButton from 'material-ui/lib/floating-action-button';
 import SelectField from 'material-ui/lib/select-field';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/lib/table';
+import {Card, CardText} from 'material-ui/lib/card';
 
 describe('<AppComponent>',() => {
     let appComponent;
@@ -205,5 +208,56 @@ describe('<EditTable>', () => {
         expect(editTable.find(CompositeRow)).to.have.length(numberOfRows);
         editTable.find(FlatButton).simulate('click');
         expect(editTable.find(CompositeRow)).to.have.length(numberOfRows+1);
+    });
+});
+
+describe('<CompositeRow>', () => {
+    let compositeRow;
+    const rowData = {
+        headers:[
+            {name: "h1",type: "TEXT", required: true},
+            {name: "h2",type: "TEXT", required: true},
+            {name: "h3",type: "TEXT", required: true}
+        ],
+        programStages:[{id: "1"}, {id: "2"}, {id:"3"}],
+        programId: 'randomId',
+    };
+
+    const context = {
+        muiTheme: AppTheme,
+        d2: {
+            i18n: {
+                getTranslation(key) {
+                    return `${key}_translated`;
+                },
+            },
+        }
+    };
+
+    beforeEach(() => {
+        compositeRow = shallow(<CompositeRow rowData={rowData}/>, {context});
+    });
+
+    it('should render the TableRow and Card Component', () => {
+        expect(compositeRow.find(TableRow)).to.have.length(1);
+        expect(compositeRow.find(TableRowColumn)).to.have.length(1);
+    });
+
+    it('should render one card if the state "saved" is not saved', () => {
+        expect(compositeRow.find(CardText)).to.have.length(1);
+    });
+
+    it('should render two cards if the state "saved" is set', () => {
+        compositeRow.setState({
+            saved: true
+        });
+        expect(compositeRow.find(CardText)).to.have.length(2);
+    });
+
+    it('should render the StageTabs as many stages', () => {
+        compositeRow.setState({
+            saved: true
+        });
+        expect(compositeRow.find(StageTabs)).to.have.length(rowData.programStages.length);
     });
 });
