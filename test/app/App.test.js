@@ -187,4 +187,23 @@ describe('<EditTable>', () => {
 
         expect(editTable.find(CompositeRow).first().props().update).to.equal(false);
     });
+
+    it('should render a new row on button click', () => {
+        let numberOfRows = 5;
+        editTable.setState({
+            selectedProgData:{
+                headers:[
+                    {name: "h1",type: "TEXT", required: true},
+                    {name: "h2",type: "TEXT", required: true},
+                    {name: "h3",type: "TEXT", required: true}
+                ],
+                programStages:[],
+            },
+            rowCount:numberOfRows
+        });
+
+        expect(editTable.find(CompositeRow)).to.have.length(numberOfRows);
+        editTable.find(FlatButton).simulate('click');
+        expect(editTable.find(CompositeRow)).to.have.length(numberOfRows+1);
+    });
 });
