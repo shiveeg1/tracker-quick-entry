@@ -4,53 +4,47 @@ import FloatingActionButton from 'material-ui/lib/floating-action-button';
 import ArrowDown from 'material-ui/lib/svg-icons/hardware/keyboard-arrow-down';
 
 export default class ButtonWrapper extends React.Component {
-    constructor(props,context) {
-        super(props,context);
+    constructor(props, context) {
+        super(props, context);
         this.props = props;
         this.context = context;
         this.state = {
-            rotate: false
-        }
+            rotate: false,
+        };
     }
 
     handleFabClick() {
         this.setState({
-            rotate: !this.state.rotate
+            rotate: !this.state.rotate,
         });
         this.props.toggleCard();
     }
 
-    componentWillReceiveProps() {
-        this.setState({
-            rotate: false
-        });
-    }
-
     render() {
         const styles = {
-            wrapperStyle : {
-                backgroundColor:'white',
-                zIndex:'10',
-                textAlign:'center',
-                position:'absolute',
-                right:0,
-                paddingRight:24,
-                paddingLeft:24,
-                paddingTop:9,
-                paddingBottom:10,
-                height:36,
-                width:152,
-                marginTop:-1,
-                borderBottom:'solid 1px #bdbdbd',
-                borderLeft:'solid 1px #bdbdbd',
-                borderTop:'solid 1px #bdbdbd',
+            wrapperStyle: {
+                backgroundColor: 'white',
+                zIndex: '10',
+                textAlign: 'center',
+                position: 'absolute',
+                right: 0,
+                paddingRight: 24,
+                paddingLeft: 24,
+                paddingTop: 9,
+                paddingBottom: 10,
+                height: 36,
+                width: 152,
+                marginTop: -1,
+                borderBottom: 'solid 1px #bdbdbd',
+                borderLeft: 'solid 1px #bdbdbd',
+                borderTop: 'solid 1px #bdbdbd',
             },
-            fabStyle : {
-                position: "absolute",
-                right:10,
-                transform: this.state.rotate ? "rotate(180deg)" : "rotate(0deg)",
-                transition:"transform 0.5s",
-            }
+            fabStyle: {
+                position: 'absolute',
+                right: 10,
+                transform: this.state.rotate ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.5s',
+            },
         };
 
         return (
@@ -61,33 +55,36 @@ export default class ButtonWrapper extends React.Component {
                     onClick={this.props.onClick}
                     icon={this.props.icon}
                     disabled={this.props.disableStatus}
-                    style={this.props.style} />
+                    style={this.props.style}
+                />
                 {this.props.status &&
                     <FloatingActionButton
-                        mini={true}
+                        mini
                         backgroundColor={styles.wrapperStyle.backgroundColor}
-                        secondary={true}
+                        secondary
                         style={styles.fabStyle}
-                        onClick={this.handleFabClick.bind(this)}>
-                        <ArrowDown color={this.context.muiTheme.rawTheme.palette.primary1Color}/>
+                        onClick={this.handleFabClick.bind(this)}
+                    >
+                        <ArrowDown color={this.context.muiTheme.rawTheme.palette.primary1Color} />
                     </FloatingActionButton>
                 }
             </div>
 
-        )
+        );
     }
 }
 
-
-
-ButtonWrapper.defaultProps = {label:"PLACEHOLDER"};
+ButtonWrapper.defaultProps = { label: 'PLACEHOLDER' };
 
 ButtonWrapper.propTypes = {
-    label : React.PropTypes.string,
-    labelStyle : React.PropTypes.object,
-    onClick : React.PropTypes.func,
-    style : React.PropTypes.object,
+    label: React.PropTypes.string,
+    labelStyle: React.PropTypes.object,
+    onClick: React.PropTypes.func,
+    style: React.PropTypes.object,
     status: React.PropTypes.bool,
-}
+    toggleCard: React.PropTypes.func,
+    icon: React.PropTypes.node,
+    disableStatus: React.PropTypes.bool,
+};
 
-ButtonWrapper.contextTypes = {muiTheme: React.PropTypes.object.isRequired}
+ButtonWrapper.contextTypes = { muiTheme: React.PropTypes.object.isRequired };

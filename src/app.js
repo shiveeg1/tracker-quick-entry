@@ -40,7 +40,7 @@ function startApp(d2) {
         .then(rootUnit => {
             render(<App d2={d2} root={rootUnit} />, document.getElementById('app'));
         })
-        .catch(err => console.log('failed to initialise d2'+err));
+        .catch(err => log.error('failed to initialise d2: ', err));
 }
 
 function configI18n(userSettings) {

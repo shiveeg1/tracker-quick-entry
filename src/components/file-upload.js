@@ -39,7 +39,7 @@ export default class FileUpload extends React.Component {
         );
     }
 
-    getIcon = ()=> {
+    getIcon = () => {
         console.log("get icon called");
         if(this.state.saved && !this.state.uploading) {
             return <FontIcon className="material-icons">done</FontIcon>

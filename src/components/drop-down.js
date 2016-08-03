@@ -28,14 +28,14 @@ export default class HackyDropDown extends React.Component {
         }
     }
 
-    shouldComponentUpdate = (nextProps,nextState) => {
+    shouldComponentUpdate(nextProps,nextState) {
       if(JSON.stringify(nextProps)==JSON.stringify(this.props) && JSON.stringify(nextState)==JSON.stringify(this.state))
         return false;
       else
         return true;
     }
 
-    componentWillReceiveProps = (nextProps) => {
+    componentWillReceiveProps(nextProps) {
         if(JSON.stringify(this.props.menuItems)!=JSON.stringify(nextProps.menuItems)) {
             if(nextProps.menuItems.length>0){
                 this.setState({
@@ -50,7 +50,7 @@ export default class HackyDropDown extends React.Component {
 
     }
 
-    handleChange = (event, index, value) => {
+    handleChange(event, index, value) {
         this.setState({value});
         this.props.onChange({target: {value: value}});
     }
