@@ -13,7 +13,7 @@
     "lint": "eslint --fix src && ./node_modules/eslint/bin/eslint.js --env node,mocha --global expect,sinon,spy,stub --rule 'no-unused-expressions: 0' test && scss-lint",
     "validate": "npm ls",
     "prestart": "d2-manifest package.json manifest.webapp",
-    "start": "webpack-dev-server --inline --hot"
+    "start": "webpack-dev-server --inline"
   },
   "keywords": [
     "DHIS2",
@@ -64,11 +64,6 @@
     "webpack": "^1.12.14",
     "webpack-dev-server": "^1.14.1"
   },
-  "activities": {
-      "dhis": {
-        "href": ".."
-      }
-  },
   "directories": {
     "test": "test"
   },
@@ -81,6 +76,7 @@
   },
   "homepage": "https://github.com/shiveeg1/tracker-quick-entry#readme",
   "manifest.webapp": {
+    "name": "DHIS 2 Quick Entry",
     "icons": {
       "48": "icon.png"
     }
