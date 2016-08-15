@@ -1,8 +1,6 @@
 
 ## Quick Data entry App for Tracker capture 
 
-*WIP*
-
 GSoC project to provide a quick data entry for tracker capture for DHIS2.
 
 **Description**
@@ -20,8 +18,10 @@ The DHIS2 Tracker is a module for tracking entities across time and space throug
 
 This app is intended to provide a faster tabular data entry option for tracker capture. Also this apps moves the server side rendered app to client side provider faster UI interatcitons and reducing the XHR requests. 
 
-** Demo **
+**Demo**
+
 This is the link to the demo : https://youtu.be/7Wes6vskmnM
 
 **Tools and technologies**
+
 JavaScript (ECMAScript 2015 (ES6)), ReactJS, Babel, Webpack, Material UI, D2, D2-UI, open-web app.
